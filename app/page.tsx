@@ -101,7 +101,7 @@ export default function Home() {
                 viewBox="0 0 24 24"
                 strokeWidth={1.5}
                 stroke="currentColor"
-                className="w-10 h-10 text-rose-400 stroke-[2px] dark:transition-colors dark:delay-300 delay-300 dark:text-teal-200"
+                className="w-10 h-10 text-rose-400 stroke-[2px] transition-colors delay-300 dark:text-teal-200"
               >
                 <path
                   strokeLinecap="round"
