@@ -90,7 +90,7 @@ export default function Home() {
             </label>
           </div>
           <div className="mx-auto max-w-md text-center flex justify-center items-center gap-2 ">
-            <h2 className="text-5xl font-light font-sans text-rose-400 dark:transition-colors dark:delay-300 dark:text-white">
+            <h2 className="text-5xl font-light font-sans text-rose-400 transition-colors  delay-300 dark:text-amber-200">
               09:00
             </h2>
             <label htmlFor="alarm">
@@ -101,7 +101,7 @@ export default function Home() {
                 viewBox="0 0 24 24"
                 strokeWidth={1.5}
                 stroke="currentColor"
-                className="w-10 h-10 text-rose-400 stroke-[2px] dark:transition-colors dark:delay-300 dark:text-white"
+                className="w-10 h-10 text-rose-400 stroke-[2px] dark:transition-colors dark:delay-300 delay-300 dark:text-teal-200"
               >
                 <path
                   strokeLinecap="round"
