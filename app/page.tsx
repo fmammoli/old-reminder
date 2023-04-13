@@ -12,14 +12,16 @@ const modes = ["base", "active"];
 export default function Home() {
   const [darkMode, setDarkMode] = useState(false);
 
-  const [theme, setTheme] = useState<string>(themes[0]);
+  const [theme, setTheme] = useState<string>("theme-one-base");
   const [mode, setMode] = useState<string>(modes[0]);
 
   function handleChange() {
     if (mode === modes[0]) {
       setMode(modes[1]);
+      setTheme(`${themes[0]}-${modes[1]}`);
     } else {
       setMode(modes[0]);
+      setTheme(`${themes[0]}-${modes[0]}`);
     }
 
     // if (theme === `${themes[0]}-${modes[0]}`) {
@@ -30,9 +32,9 @@ export default function Home() {
   }
 
   return (
-    <main className={`  md:container md:mx-auto  md:my-4 ${theme}-${mode}`}>
+    <main className={`${theme} md:container md:mx-auto  md:my-4 `}>
       <div className="relative isolate overflow-hidden bg-skin-fill md:rounded-xl ">
-        <nav className="flex justify-between items-center px-4 py-4 text-skin-base transition-colors delay-200">
+        <nav className="flex justify-between items-center px-4 py-4 text-skin-base transition-colors ease-in-out delay-[150ms] duration-[400ms]">
           <a href="">
             <svg
               className="w-8 h-8 "
@@ -104,7 +106,7 @@ export default function Home() {
             </label>
           </div>
           <div className="mx-auto max-w-md text-center flex justify-center items-center gap-2 ">
-            <h2 className="text-5xl font-light font-sans text-skin-accent transition-colors delay-300">
+            <h2 className="text-5xl font-light font-sans text-skin-accent transition-colors delay-200">
               09:00
             </h2>
             <label htmlFor="alarm">
@@ -115,7 +117,7 @@ export default function Home() {
                 viewBox="0 0 24 24"
                 strokeWidth={1.5}
                 stroke="currentColor"
-                className="w-10 h-10 text-skin-inverted stroke-[2px] transition-colors delay-300"
+                className="w-10 h-10 text-skin-inverted stroke-[2px] transition-colors delay-200"
               >
                 <path
                   strokeLinecap="round"
@@ -150,7 +152,7 @@ export default function Home() {
             </p>
           </div>
 
-          <div className="max-w-md mx-auto font-sans font-light py-12 text-sm sm:px-12 dark:transition-colors text-skin-base transition-colors delay-200">
+          <div className="max-w-md mx-auto font-sans font-light py-12 text-sm sm:px-12 dark:transition-colors text-skin-base transition-colors ease-in-out delay-200">
             <div className=" flex items-center gap-1 ">
               <h3 className="font-sans text-lg font-medium">Bula:</h3>
               <a href="">

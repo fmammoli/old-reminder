@@ -4,9 +4,10 @@
 
 @layer base {
   :root {
-    --color-text-base: theme("colors.neutral.950");
+    --color-text-base: theme("colors.neutral.50");
     --color-text-muted: theme("colors.neutral.700");
     --color-text-inverted: theme("colors.rose.400");
+    --color-text-accent: theme("colors.rose.400");
     --color-fill: theme("colors.neutral.100");
     --color-accent-fill: theme("colors.rose.400");
     --color-old-neutral: 238, 240, 244;
