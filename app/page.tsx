@@ -16,19 +16,19 @@ export default function Home() {
   const [mode, setMode] = useState<string>(modes[0]);
 
   function handleChange() {
-    if (mode === modes[0]) {
-      setMode(modes[1]);
-      setTheme(`${themes[0]}-${modes[1]}`);
-    } else {
-      setMode(modes[0]);
-      setTheme(`${themes[0]}-${modes[0]}`);
-    }
-
-    // if (theme === `${themes[0]}-${modes[0]}`) {
+    // if (theme === modes[0]) {
+    //   setMode(modes[1]);
     //   setTheme(`${themes[0]}-${modes[1]}`);
     // } else {
+    //   setMode(modes[0]);
     //   setTheme(`${themes[0]}-${modes[0]}`);
     // }
+
+    if (theme === `${themes[0]}-${modes[0]}`) {
+      setTheme("theme-one-active");
+    } else {
+      setTheme("theme-one-base");
+    }
   }
 
   return (
@@ -75,11 +75,11 @@ export default function Home() {
           </a>
         </nav>
         <section className="px-12 mt-12">
-          <div className="mx-auto max-w-md text-center font-sans text-skin-base ">
-            <h1 className="text-4xl font-light font-sans text-skin-muted transition-colors delay-200">
+          <div className="mx-auto max-w-md text-center font-sans">
+            <h1 className="text-4xl font-light font-sans  delay-200 text-skin-muted">
               Azitromicina, 300mg
             </h1>
-            <p className="text-md font-extralight italic transition-colors delay-200">
+            <p className="text-md font-extralight italic  text-skin-base transition-colors delay-200">
               1 capsule, once a day
             </p>
           </div>
@@ -109,7 +109,7 @@ export default function Home() {
             <h2 className="text-5xl font-light font-sans text-skin-accent transition-colors delay-200">
               09:00
             </h2>
-            <label htmlFor="alarm">
+            <label htmlFor="alarm" className="transition-colors delay-200">
               <input type="checkbox" id="alarm" className=" peer hidden" />
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -117,7 +117,7 @@ export default function Home() {
                 viewBox="0 0 24 24"
                 strokeWidth={1.5}
                 stroke="currentColor"
-                className="w-10 h-10 text-skin-inverted stroke-[2px] transition-colors delay-200"
+                className="w-10 h-10 text-skin-inverted stroke-[2px] ease-in-out transition-colors delay-200"
               >
                 <path
                   strokeLinecap="round"

@@ -5,14 +5,14 @@
 @layer base {
   :root {
     --color-text-base: theme("colors.neutral.50");
-    --color-text-muted: theme("colors.neutral.700");
-    --color-text-inverted: theme("colors.rose.400");
-    --color-text-accent: theme("colors.rose.400");
-    --color-fill: theme("colors.neutral.100");
-    --color-accent-fill: theme("colors.rose.400");
+    --color-text-muted: theme("colors.neutral.50");
+    --color-text-inverted: theme("colors.neutral.50");
+    --color-text-accent: theme("colors.neutral.50");
+    --color-fill: theme("colors.neutral.50");
+    --color-accent-fill: theme("colors.neutral.50");
     --color-old-neutral: 238, 240, 244;
-    --color-accent: theme("colors.rose.400");
-    --color-button-accent: theme("colors.rose.400");
+    --color-accent: theme("colors.neutral.50");
+    --color-button-accent: theme("colors.neutral.50");
     --color-button-accent-hover: theme("colors.rose.500");
     --color-button-muted: theme("colors.neutral.100");
   }
@@ -33,7 +33,7 @@
 
   .theme-one-active {
     --color-text-base: theme("colors.neutral.50");
-    --color-text-muted: theme("colors.neutral.50");
+    --color-text-muted: theme("colors.rose.50");
     --color-text-inverted: theme("colors.amber.200");
     --color-text-accent: theme("colors.teal.200");
     --color-fill: theme("colors.neutral.100");
