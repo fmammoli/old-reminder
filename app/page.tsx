@@ -6,19 +6,33 @@ import { useState } from "react";
 
 const inter = Inter({ subsets: ["latin"] });
 
+const themes = ["theme-one"];
+const modes = ["base", "active"];
+
 export default function Home() {
   const [darkMode, setDarkMode] = useState(false);
 
+  const [theme, setTheme] = useState<string>(themes[0]);
+  const [mode, setMode] = useState<string>(modes[0]);
+
   function handleChange() {
-    setDarkMode(!darkMode);
+    if (mode === modes[0]) {
+      setMode(modes[1]);
+    } else {
+      setMode(modes[0]);
+    }
+
+    // if (theme === `${themes[0]}-${modes[0]}`) {
+    //   setTheme(`${themes[0]}-${modes[1]}`);
+    // } else {
+    //   setTheme(`${themes[0]}-${modes[0]}`);
+    // }
   }
 
   return (
-    <main
-      className={`${darkMode ? "dark" : ""}  md:container md:mx-auto  md:my-4`}
-    >
-      <div className="relative isolate overflow-hidden bg-[#EEF0F4] md:rounded-xl ">
-        <nav className="flex justify-between items-center px-4 py-4 dark:transition-colors dark:delay-300 dark:text-white">
+    <main className={`  md:container md:mx-auto  md:my-4 ${theme}-${mode}`}>
+      <div className="relative isolate overflow-hidden bg-skin-fill md:rounded-xl ">
+        <nav className="flex justify-between items-center px-4 py-4 text-skin-base transition-colors delay-200">
           <a href="">
             <svg
               className="w-8 h-8 "
@@ -59,11 +73,11 @@ export default function Home() {
           </a>
         </nav>
         <section className="px-12 mt-12">
-          <div className="mx-auto max-w-md text-center font-sans dark:transition-colors dark:delay-300 dark:text-white">
-            <h1 className="text-4xl font-light font-sans text-gray-700 dark:transition-colors dark:delay-300 dark:text-white">
+          <div className="mx-auto max-w-md text-center font-sans text-skin-base ">
+            <h1 className="text-4xl font-light font-sans text-skin-muted transition-colors delay-200">
               Azitromicina, 300mg
             </h1>
-            <p className="text-md font-extralight italic">
+            <p className="text-md font-extralight italic transition-colors delay-200">
               1 capsule, once a day
             </p>
           </div>
@@ -77,11 +91,11 @@ export default function Home() {
                 onChange={handleChange}
               />
 
-              <div className="bg-rose-400 absolute w-20 h-20 top-1/2 left-1/2 rounded-full -z-10 -translate-x-1/2 -translate-y-1/2 transition-transform ease-in-out peer-checked:delay-[200ms] peer-checked:duration-[800ms] duration-[400ms] peer-checked:scale-[30] will-change-transform transform-gpu"></div>
+              <div className="bg-skin-accent-fill  absolute w-20 h-20 top-1/2 left-1/2 rounded-full -z-10 -translate-x-1/2 -translate-y-1/2 transition-transform ease-in-out peer-checked:delay-[200ms] peer-checked:duration-[800ms] duration-[400ms] peer-checked:scale-[30] will-change-transform transform-gpu"></div>
 
-              <div className="bg-[#EEF0F4] absolute rounded-full -translate-y-6 peer-checked:translate-y-2 shadow-2xl transition-all ease-out duration-200 peer-checked:duration-[500ms] peer-checked:scale-95 border border-gray-200 p-8 z-10 peer-checked:border-none peer-checked:shadow-none">
+              <div className="bg-skin-fill absolute rounded-full -translate-y-6 peer-checked:translate-y-2 shadow-2xl transition-all ease-out duration-200 peer-checked:duration-[500ms] peer-checked:scale-95 border border-gray-200 p-8 z-10 peer-checked:border-none peer-checked:shadow-none">
                 <div className="relative w-20 h-20 max-w-full flex items-center justify-center">
-                  <div className="aspect-square w-14 bg-rose-400 rounded-full"></div>
+                  <div className="aspect-square w-14 bg-skin-accent-fill rounded-full"></div>
                   <Image src={icon} alt="capsule" fill></Image>
                 </div>
               </div>
@@ -90,7 +104,7 @@ export default function Home() {
             </label>
           </div>
           <div className="mx-auto max-w-md text-center flex justify-center items-center gap-2 ">
-            <h2 className="text-5xl font-light font-sans text-rose-400 transition-colors  delay-300 dark:text-amber-200">
+            <h2 className="text-5xl font-light font-sans text-skin-accent transition-colors delay-300">
               09:00
             </h2>
             <label htmlFor="alarm">
@@ -101,7 +115,7 @@ export default function Home() {
                 viewBox="0 0 24 24"
                 strokeWidth={1.5}
                 stroke="currentColor"
-                className="w-10 h-10 text-rose-400 stroke-[2px] transition-colors delay-300 dark:text-teal-200"
+                className="w-10 h-10 text-skin-inverted stroke-[2px] transition-colors delay-300"
               >
                 <path
                   strokeLinecap="round"
@@ -115,7 +129,7 @@ export default function Home() {
                 viewBox="0 0 24 24"
                 strokeWidth={1.5}
                 stroke="currentColor"
-                className="w-10 h-10 stroke-rose-400 stroke-[2px] hidden"
+                className="w-10 h-10 text-skin-inverted stroke-[2px] hidden"
               >
                 <path
                   strokeLinecap="round"
@@ -126,7 +140,7 @@ export default function Home() {
             </label>
           </div>
 
-          <div className="max-w-md mx-auto font-sans font-light pt-12 text-sm sm:px-12 dark:transition-colors dark:delay-300 dark:text-white">
+          <div className="max-w-md mx-auto font-sans font-light pt-12 text-sm sm:px-12 dark:transition-colors text-skin-base transition-colors delay-200">
             <div className=" flex items-center gap-1 ">
               <h3 className="font-sans text-lg font-medium">Observações:</h3>
             </div>
@@ -136,7 +150,7 @@ export default function Home() {
             </p>
           </div>
 
-          <div className="max-w-md mx-auto font-sans font-light py-12 text-sm sm:px-12 dark:transition-colors dark:delay-300 dark:text-white">
+          <div className="max-w-md mx-auto font-sans font-light py-12 text-sm sm:px-12 dark:transition-colors text-skin-base transition-colors delay-200">
             <div className=" flex items-center gap-1 ">
               <h3 className="font-sans text-lg font-medium">Bula:</h3>
               <a href="">
