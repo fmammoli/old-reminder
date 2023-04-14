@@ -94,6 +94,10 @@ export default function Home() {
     setFade(!fade);
   }
 
+  function handleSlideChange(current: number) {
+    setFade(false);
+  }
+
   return (
     <main className={`${theme} md:container md:mx-auto md:my-4 `}>
       <div className="relative isolate overflow-hidden bg-skin-fill md:rounded-xl pb-8">
@@ -102,7 +106,7 @@ export default function Home() {
           <Title></Title>
 
           <div className="" id="crouselContainer relative">
-            <Slider data={medicines}>
+            <Slider data={medicines} onSlideChange={handleSlideChange}>
               <ButtonGroup onChange={handleButtonChange}>
                 <Image src={icon} alt=""></Image>
                 <Image src={icon} alt=""></Image>
@@ -117,7 +121,7 @@ export default function Home() {
 
           <ScheduledTime></ScheduledTime>
 
-          <div className="flex flex-col justify-center">
+          <div className="flex flex-col justify-center px-10">
             <div className="pt-12">
               <Description title={"Observações:"}>
                 <p className="py-4 leading-relaxed">
