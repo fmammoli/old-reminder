@@ -1,5 +1,5 @@
 "use client";
-import Image from "next/image";
+import Image, { StaticImageData } from "next/image";
 import { Inter } from "next/font/google";
 import icon from "/public/images/capsule.png";
 import { ChangeEvent, useEffect, useRef, useState } from "react";
@@ -13,13 +13,30 @@ import Hole from "./Hole";
 import FloatingButton from "./FloatingButton";
 import ButtonGroup from "./ButtonGroup";
 import Slider from "./Slider";
+import BackgroundFill from "./BackgroundFill";
 
 const inter = Inter({ subsets: ["latin"] });
 
-const themes = ["theme-one"];
-const modes = ["base", "active"];
+const themes = [
+  ["theme-one-base", "theme-one-active"],
+  ["theme-two-base", "theme-two-active"],
+  ["theme-three-base", "theme-three-active"],
+  ["theme-four-base", "theme-four-active"],
+];
 
-const medicines = [
+export type MedicineType = {
+  id: string;
+  title: string;
+  concentration: string;
+  amount: string;
+  frequency: string;
+  color: string;
+  theme: string;
+  checked: boolean;
+  icon: StaticImageData;
+};
+
+const medicineList: MedicineType[] = [
   {
     id: "1",
     title: "Azitromicina",
@@ -27,14 +44,20 @@ const medicines = [
     amount: "1 capsule",
     frequency: "once a day",
     color: "bg-rose-400",
+    theme: "theme-one",
+    checked: false,
+    icon: icon,
   },
   {
     id: "2",
-    title: "Bzitromicina",
+    title: "Decongex",
     concentration: "700mg",
-    amount: "1 capsule",
+    amount: "2 capsule",
     frequency: "once a day",
-    color: "bg-teal-200",
+    color: "bg-sky-400",
+    theme: "theme-two",
+    checked: false,
+    icon: icon,
   },
   {
     id: "3",
@@ -42,7 +65,10 @@ const medicines = [
     concentration: "700mg",
     amount: "1 capsule",
     frequency: "once a day",
-    color: "bg-sky-200",
+    color: "bg-amber-200",
+    theme: "theme-three",
+    checked: false,
+    icon: icon,
   },
   {
     id: "4",
@@ -51,66 +77,105 @@ const medicines = [
     amount: "1 capsule",
     frequency: "once a day",
     color: "bg-purple-200",
+    theme: "theme-four",
+    checked: false,
+    icon: icon,
   },
 ];
 
 export default function Home() {
+  const [medicines, setMedicines] = useState(medicineList);
   const [theme, setTheme] = useState<string>("theme-one-base");
-  const [mode, setMode] = useState<string>(modes[0]);
-  const [checked, setChecked] = useState<string>("");
 
-  const [current, setCurrent] = useState(0);
+  const [checked, setChecked] = useState<string[]>([]);
 
-  function handleChange({
-    event,
-    inputKey,
-    fillBackground,
-  }: {
-    event: ChangeEvent<HTMLInputElement> | undefined;
-    inputKey: string;
-    fillBackground?: boolean;
-  }) {
-    // if (theme === modes[0]) {
-    //   setMode(modes[1]);
-    //   setTheme(`${themes[0]}-${modes[1]}`);
-    // } else {
-    //   setMode(modes[0]);
-    //   setTheme(`${themes[0]}-${modes[0]}`);
-    // }
-
-    if (fillBackground) {
-      if (theme === `${themes[0]}-${modes[0]}`) {
-        setTheme("theme-one-active");
-      } else {
-        setTheme("theme-one-base");
-      }
-    }
-    setChecked(inputKey);
-  }
+  const [current, setCurrent] = useState(medicineList[0]);
 
   const [fade, setFade] = useState(false);
 
-  function handleButtonChange() {
+  function handleButtonClick(
+    event: ChangeEvent<HTMLInputElement>,
+    newChecked: string[]
+  ) {
+    setMedicines((medicines) =>
+      medicines.map((item) => {
+        return {
+          ...item,
+          checked: newChecked.includes(`check-${item.id}`),
+        };
+      })
+    );
+
+    setCurrent((c) => {
+      return { ...c, checked: newChecked.includes(`check-${c.id}`) };
+    });
+
+    if (theme.includes("base")) {
+      setTheme(themes[0][1]);
+    } else {
+      setTheme(themes[0][0]);
+    }
     setFade(!fade);
   }
 
-  function handleSlideChange(current: number) {
-    setFade(false);
+  const [preserve, setPreserve] = useState(false);
+
+  function handleSlideChange(current: number, direction: "+1" | "-1") {
+    if (medicines[current].checked === true) {
+      setTheme(themes[current][1]);
+      setFade(true);
+    } else {
+      setTheme(themes[current][0]);
+      setFade(false);
+    }
+    if (direction === "+1") {
+      setPreserve(
+        medicines[current - 1].checked !== medicines[current].checked
+          ? true
+          : false
+          ? true
+          : false
+      );
+    } else {
+      setPreserve(
+        medicines[current + 1].checked !== medicines[current].checked
+          ? true
+          : false
+      );
+    }
+    setCurrent(medicines[current]);
   }
 
   return (
-    <main className={`${theme} md:container md:mx-auto md:my-4 `}>
-      <div className="relative isolate overflow-hidden bg-skin-fill md:rounded-xl pb-8">
-        <Menu></Menu>
-        <section className="mt-12">
-          <Title></Title>
+    <main className={`${theme} md:container md:mx-auto md:my-4`}>
+      <BackgroundFill
+        isVisible={current.checked}
+        color={current.color}
+      ></BackgroundFill>
+
+      <div className={`overflow-hidden md:rounded-xl pb-8 bg-skin-fill `}>
+        <section className="relative">
+          <Menu></Menu>
+        </section>
+        <section className="mt-12 relative">
+          <Title
+            title={`${current.title}, ${current.concentration}`}
+            subtitle={`${current.amount}, ${current.frequency}`}
+          ></Title>
 
           <div className="" id="crouselContainer relative">
             <Slider data={medicines} onSlideChange={handleSlideChange}>
-              <ButtonGroup onChange={handleButtonChange}>
-                <Image src={icon} alt=""></Image>
-                <Image src={icon} alt=""></Image>
-                <p>AA</p>
+              <ButtonGroup onChange={handleButtonClick}>
+                {medicines.map((item) => (
+                  <div
+                    id={item.id}
+                    color={item.color}
+                    key={`img-check-${item.id}`}
+                    className="relative"
+                  >
+                    <Image src={item.icon} alt=""></Image>
+                  </div>
+                ))}
               </ButtonGroup>
             </Slider>
           </div>

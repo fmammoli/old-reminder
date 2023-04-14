@@ -1,4 +1,4 @@
-import { ChangeEvent, ReactNode } from "react";
+import { ChangeEvent, ReactNode, MouseEvent } from "react";
 
 export default function FloatingButton({
   isChecked,
@@ -7,37 +7,51 @@ export default function FloatingButton({
   color = "bg-rose-400",
   children,
 }: {
-  isChecked: string;
+  isChecked: string | string[];
   inputKey: string;
   onChange?: (event: ChangeEvent<HTMLInputElement>) => void;
   color?: string;
   children?: ReactNode;
 }) {
   const fittings = {
-    perfect: "translate-y-[0.20rem]",
+    perfect: "translate-y-2",
     cool: "translate-y-[0.50rem]",
   };
-  return (
-    <div className="flex col ">
-      <label htmlFor={inputKey}>
-        <input
-          id={inputKey}
-          type="checkbox"
-          className={"hidden z-20"}
-          onChange={onChange}
-          defaultChecked={false}
-        />
 
+  const amIChecked = isChecked.includes(inputKey);
+
+  function handleChange(event: React.MouseEvent<HTMLDivElement>) {
+    if (event.detail < 2 && amIChecked) {
+      event.preventDefault();
+      event.stopPropagation();
+      console.log("prevented");
+    } else {
+      console.log("unprevented");
+    }
+  }
+
+  return (
+    <div className="flex col">
+      <label htmlFor={inputKey}>
         <div
           className={`${
-            isChecked === inputKey
-              ? `${fittings.perfect} duration-[500ms] scale-95 border-none shadow-none`
-              : ""
-          } bg-skin-fill -translate-y-4  rounded-full shadow-2xl  transition-all ease-out duration-200 border border-gray-200 p-8 z-10`}
+            amIChecked
+              ? `${fittings.perfect} duration-[500ms] scale-[0.90] border-none shadow-none`
+              : " -translate-y-8 shadow-2xl"
+          } focus:translate-y-[0.5rem] w-[146px] h-[146px] flex justify-center items-center  cursor-pointer bg-skin-fill  rounded-full transition-all ease-out duration-200 border border-gray-200  z-10 will-change-[shadow]`}
         >
-          <div className="relative w-20 h-20 max-w-full flex items-center justify-center">
-            <div className={`aspect-square w-14 rounded-full  ${color}`}></div>
-            {children}
+          <input
+            id={inputKey}
+            type="checkbox"
+            className={"hidden z-20"}
+            onChange={onChange}
+            defaultChecked={false}
+          />
+          <div
+            className={`relative w-20 h-20 max-w-full flex items-center justify-center`}
+          >
+            <div className={`w-full h-full rounded-full ${color}`}></div>
+            <div className="absolute w-20 h-20">{children}</div>
           </div>
         </div>
       </label>

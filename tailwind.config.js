@@ -27,8 +27,12 @@ module.exports = {
           "accent-fill": "var(--color-accent-fill)",
           "button-accent": "var(--color-button-accent)",
           "color-button-accent-hover": "var(--color-button-accent-hover)",
-          "olor-button-muted": "var( --color-button-muted)",
+          "color-button-muted": "var(--color-button-muted)",
         },
+      },
+      transitionDelay: {
+        "skin-alternate-close": "var(--delay-alternate-close)",
+        "skin-alternate-far": "var(--delay-alternate-close)",
       },
     },
   },

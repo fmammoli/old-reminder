@@ -1,6 +1,6 @@
 export default function Menu() {
   return (
-    <nav className="flex justify-between items-center px-4 py-4 text-skin-base transition-colors ease-in-out delay-[150ms] duration-[400ms]">
+    <nav className="flex justify-between items-center px-4 py-4 text-skin-base transition-colors delay-skin-alternate-far">
       <a href="">
         <svg
           className="w-8 h-8 "

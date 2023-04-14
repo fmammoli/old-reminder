@@ -1,10 +1,10 @@
 export default function ScheduledTime() {
   return (
     <div className="mx-auto max-w-md text-center flex justify-center items-center gap-2 ">
-      <h2 className="text-5xl font-light font-sans text-skin-accent transition-colors delay-200">
+      <h2 className="text-5xl font-light font-sans text-skin-accent transition-colors delay-skin-alternate-close ease-in-out">
         09:00
       </h2>
-      <label htmlFor="alarm" className="transition-colors delay-200">
+      <label htmlFor="alarm" className="">
         <input type="checkbox" id="alarm" className=" peer hidden" />
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -12,7 +12,7 @@ export default function ScheduledTime() {
           viewBox="0 0 24 24"
           strokeWidth={1.5}
           stroke="currentColor"
-          className="w-10 h-10 text-skin-inverted stroke-[2px] ease-in-out transition-colors delay-200"
+          className="w-10 h-10 text-skin-inverted stroke-[2px] transition-colors delay-skin-alternate-close ease-in-out"
         >
           <path
             strokeLinecap="round"

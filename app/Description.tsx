@@ -10,7 +10,7 @@ export default function Description({
   children?: ReactNode;
 }) {
   return (
-    <div className="max-w-md mx-auto font-sans font-light text-sm sm:px-12 dark:transition-colors text-skin-base transition-colors delay-200">
+    <div className="max-w-md mx-auto font-sans font-light text-sm sm:px-12 text-skin-base transition-colors delay-skin-alternate-far">
       <div className=" flex items-center gap-1 ">
         <h3 className="font-sans text-lg font-medium">{title}</h3>
         {icon && <a href="">{icon}</a>}
