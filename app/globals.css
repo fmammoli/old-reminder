@@ -79,7 +79,7 @@
     --color-text-base: theme("colors.neutral.50");
     --color-text-muted: theme("colors.rose.50");
     --color-text-inverted: theme("colors.yellow.300");
-    --color-text-accent: theme("colors.teal.200");
+    --color-text-accent: theme("colors.amber.200");
     --color-text-check: theme("colors.green.300");
     --color-fill: theme("colors.neutral.100");
     --color-accent-fill: theme("colors.sky.300");
