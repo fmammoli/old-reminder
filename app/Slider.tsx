@@ -36,6 +36,7 @@ export default function Slider({
       if (info.delta.x == 0) {
         if (offsetX < 0) {
           if (Math.abs(info.velocity.x) > 3) {
+            console.log("a");
             nextView(current + 1);
           } else {
             if (Math.abs(offsetX) > clientWidth / 10) {
@@ -68,7 +69,7 @@ export default function Slider({
   function nextView(viewNumber: number) {
     if (dragContrainsRef && dragContrainsRef.current) {
       const clientWidth = dragContrainsRef.current.clientWidth;
-      if (current < data.length - 2) {
+      if (current < data.length - 1) {
         animate(scope.current, {
           x: -clientWidth * viewNumber,
           type: "spring",

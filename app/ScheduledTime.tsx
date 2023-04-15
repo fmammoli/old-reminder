@@ -4,13 +4,14 @@ const variants = {
   initial: {
     scale: 1,
     y: "-3rem",
-    transition: {},
+    transition: { delay: 0.5 },
   },
   drop: {
     scale: 0.7,
     y: 0,
+    fontWeight: 100,
     transition: {
-      delay: 0.25,
+      delay: 0.2,
     },
   },
 };
@@ -18,20 +19,22 @@ const variants = {
 export default function ScheduledTime({
   scheduledTo,
   checkedAt,
+  preserve,
 }: {
   scheduledTo: string;
   checkedAt?: string | undefined;
+  preserve?: boolean;
 }) {
   return (
     <div className="mx-auto max-w-md text-center">
       <motion.div
-        initial={{ opacity: 0, color: "black" }}
+        initial={{ opacity: 0 }}
         animate={checkedAt && { opacity: 1, transition: { delay: 0.3 } }}
-        exit={{ opacity: 0, transition: { duration: 0 } }}
+        exit={{ opacity: 0, transition: { duration: 0, delay: 0 } }}
       >
         <div className="flex justify-center items-center gap-2">
-          <h2 className="text-5xl font-light font-sans text-skin-accent transition-colors delay-skin-alternate-close ease-in-out">
-            {checkedAt ? checkedAt : "."}
+          <h2 className="text-5xl min-h-[3rem] font-light font-sans text-skin-accent transition-colors delay-skin-alternate-close ease-in-out">
+            {checkedAt}
           </h2>
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -39,7 +42,7 @@ export default function ScheduledTime({
             viewBox="0 0 24 24"
             strokeWidth={1.5}
             stroke="currentColor"
-            className="w-10 h-10 font-sans text-skin-accent"
+            className="w-10 h-10 font-sans text-skin-check"
           >
             <path
               strokeLinecap="round"
@@ -57,7 +60,11 @@ export default function ScheduledTime({
           animate={checkedAt && "drop"}
           className="mx-auto max-w-md text-center flex justify-center items-center gap-2 "
         >
-          <h2 className="text-5xl font-light font-sans text-skin-accent transition-colors delay-skin-alternate-close ease-in-out">
+          <h2
+            className={`${
+              !checkedAt ? "text-skin-accent" : "text-skin-base"
+            } text-5xl font-sans transition-colors delay-skin-alternate-close ease-in-out`}
+          >
             {scheduledTo}
           </h2>
           <label htmlFor="alarm" className="">
@@ -68,7 +75,9 @@ export default function ScheduledTime({
               viewBox="0 0 24 24"
               strokeWidth={1.5}
               stroke="currentColor"
-              className="w-10 h-10 text-skin-inverted stroke-[2px] transition-colors delay-skin-alternate-close ease-in-out"
+              className={`${
+                !checkedAt ? "text-skin-inverted " : "text-skin-base"
+              } w-10 h-10  transition-colors delay-skin-alternate-close ease-in-out`}
             >
               <path
                 strokeLinecap="round"

@@ -1,75 +1,68 @@
 import { AnimatePresence, motion } from "framer-motion";
-import { ReactNode, memo, useRef } from "react";
+import { ReactNode, memo, useEffect, useRef } from "react";
 
 const fill = {
-  open: (height = 1000) => ({
-    clipPath: `circle(${height * 2 + 200}px at 50% 45%)`,
-    transition: {
-      delay: 0.45,
-      type: "spring",
-      stiffness: 20,
-      restDelta: 2,
-    },
-  }),
-  closed: {
-    clipPath: "circle(30px at 50% 45%)",
-    transition: {
-      type: "spring",
-      delay: 0,
-      stiffness: 400,
-      damping: 40,
-    },
+  open: ({ height = 1000 }) => {
+    // console.log("open");
+    return {
+      clipPath: `circle(${1000 * 2 + 200}px at 50% 45%)`,
+      transition: {
+        delay: 0.45,
+        type: "spring",
+        stiffness: 20,
+        restDelta: 2,
+      },
+    };
   },
-  preserved: {
-    backgroundColor: "#00000",
-
-    transition: {
-      type: "spring",
-      delay: 0,
-      stiffness: 1000,
-      damping: 10,
-    },
+  closed: () => {
+    // console.log("closed");
+    return {
+      clipPath: "circle(30px at 50% 45%)",
+      transition: {
+        type: "spring",
+        delay: 0,
+        stiffness: 400,
+        damping: 40,
+      },
+    };
   },
-};
-
-const colorVariants = {
-  visible: {
-    backgroundColor: ["bg-rose-400", "bg-sky-400"],
-    transition: {
-      duration: "1s",
-    },
+  fadeOut: ({ color }: { color: string }) => {
+    // console.log("fadeOut");
+    return {
+      backgroundColor: ["#0000", "#ffff"],
+      transition: { duration: 1000 },
+    };
   },
 };
 
-export const FillBackground = memo(FillBackgroundBase2);
+export const FillBackground = memo(FillBackgroundBase);
 
-export function FillBackgroundBase2({
+export function FillBackgroundBase({
   color = "bg-gray-400",
   children,
   isVisible,
-  preserve,
+  fadeOut = false,
 }: {
   children?: ReactNode;
   color?: string;
   isVisible: boolean;
-  preserve?: boolean;
+  fadeOut?: boolean;
 }) {
   const containerRef = useRef<HTMLDivElement>(null);
   const dimensions = useRef({ height: 0, width: 0 });
 
-  console.log(dimensions.current.height);
   return (
     <>
       <motion.div
         ref={containerRef}
         id="fillBackgroundContainer"
+        className={`absolute w-full h-full`}
         custom={dimensions.current.height}
-        className={`absolute w-full h-full ${preserve ? color : ""}`}
       >
         {false ? (
           <motion.div
             id="fillBackground"
-            className={`absolute w-full h-full`}
+            className={` w-full h-full`}
           ></motion.div>
         ) : (
           <AnimatePresence>
@@ -81,8 +74,8 @@ export function FillBackgroundBase2({
                 initial={"closed"}
                 animate={"open"}
                 exit={"closed"}
-                className={`absolute w-full h-full ${color}`}
-                style={{ transition: "background-color 400ms ease-in-out" }}
+                className={`absolute w-full h-full ${color} transition-colors duration-700`}
+                custom={{ height: dimensions.current.height, color: color }}
               ></motion.div>
             )}
           </AnimatePresence>
@@ -91,35 +84,4 @@ export function FillBackgroundBase2({
     </>
   );
 }
-
-// //This is the old way to fill the background, still working
-// export function FillBackgroundBase({
-//   play,
-//   color = "bg-gray-400",
-//   children,
-//   preserve,
-// }: {
-//   play: boolean;
-//   children?: ReactNode;
-//   color?: string;
-//   preserve?: boolean;
-// }) {
-//   const containerRef = useRef<HTMLDivElement>(null);
-//   const dimensions = useRef({ height: 0, width: 0 });
-
-//   return (
-//     <motion.div
-//       ref={containerRef}
-//       id="fillBackground"
-//       animate={play ? "open" : "closed"}
-//       custom={dimensions.current.height}
-//     >
-//       <motion.div
-//         variants={fill}
-//         className={`absolute w-full h-full ${color}`}
-//       ></motion.div>
-//     </motion.div>
-//   );
-// }
-
-export default FillBackground;
+export default FillBackgroundBase;

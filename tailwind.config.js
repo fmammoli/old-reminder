@@ -19,6 +19,7 @@ module.exports = {
           muted: "var(--color-text-muted)",
           inverted: "var(--color-text-inverted)",
           accent: "var(--color-text-accent)",
+          check: "var(--color-text-check)",
         },
       },
       backgroundColor: {

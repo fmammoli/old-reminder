@@ -69,25 +69,19 @@ const medicineList: MedicineType[] = [
     concentration: "700mg",
     amount: "1 capsule",
     frequency: "once a day",
-    color: "bg-amber-200",
+    color: "bg-violet-300",
     theme: "theme-three",
     checked: false,
     icon: icon,
     shouldTaketAt: "22:00",
   },
-  {
-    id: "4",
-    title: "Dzitromicina",
-    concentration: "700mg",
-    amount: "1 capsule",
-    frequency: "once a day",
-    color: "bg-purple-200",
-    theme: "theme-four",
-    checked: false,
-    icon: icon,
-    shouldTaketAt: "24:00",
-  },
 ];
+
+const data = {
+  id: "1-data",
+  date: new Date(),
+  medicineList: medicineList,
+};
 
 export default function Home() {
   const [medicines, setMedicines] = useState(medicineList);
@@ -146,21 +140,6 @@ export default function Home() {
       setTheme(themes[current][0]);
       setFade(false);
     }
-    if (direction === "+1") {
-      setPreserve(
-        medicines[current - 1].checked !== medicines[current].checked
-          ? true
-          : false
-          ? true
-          : false
-      );
-    } else {
-      setPreserve(
-        medicines[current + 1].checked !== medicines[current].checked
-          ? true
-          : false
-      );
-    }
     setCurrent(medicines[current]);
   }
 
@@ -173,7 +152,13 @@ export default function Home() {
 
       <div className={`overflow-hidden md:rounded-xl pb-8 bg-skin-fill `}>
         <section className="relative">
-          <Menu></Menu>
+          <Menu
+            title={data.date.toLocaleString("pt-Br", {
+              weekday: "long",
+              day: "2-digit",
+              month: "long",
+            })}
+          ></Menu>
         </section>
         <section className="mt-12 relative">
           <Title

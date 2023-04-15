@@ -1,4 +1,4 @@
-export default function Menu() {
+export default function Menu({ title }: { title: string }) {
   return (
     <nav className="flex justify-between items-center px-4 py-4 text-skin-base transition-colors delay-skin-alternate-far">
       <a href="">
@@ -18,11 +18,7 @@ export default function Menu() {
         </svg>
       </a>
       <h2 className="font-sans first-letter:uppercase text-xl font-light">
-        {new Date().toLocaleString("pt-Br", {
-          weekday: "long",
-          day: "2-digit",
-          month: "long",
-        })}
+        {title}
       </h2>
       <a href="">
         <svg

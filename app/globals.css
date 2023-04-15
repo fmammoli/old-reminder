@@ -21,12 +21,14 @@
   }
 
   .theme-one-base {
+    --primary-color: theme("colors.rose.400");
     --color-text-base: theme("colors.neutral.950");
     --color-text-muted: theme("colors.neutral.700");
     --color-text-inverted: theme("colors.rose.400");
     --color-text-accent: theme("colors.rose.400");
+    --color-text-check: theme("colors.green.300");
     --color-fill: theme("colors.neutral.100");
-    --color-accent-fill: theme("colors.rose.400");
+    --color-accent-fill: var("--primary-color");
     --color-old-neutral: 238, 240, 244;
     --color-accent: theme("colors.rose.400");
     --color-button-accent: theme("colors.rose.400");
@@ -42,6 +44,7 @@
     --color-text-muted: theme("colors.rose.50");
     --color-text-inverted: theme("colors.amber.200");
     --color-text-accent: theme("colors.teal.200");
+    --color-text-check: theme("colors.green.300");
     --color-fill: theme("colors.neutral.100");
     --color-accent-fill: theme("colors.rose.400");
     --color-old-neutral: 238, 240, 244;
@@ -59,6 +62,7 @@
     --color-text-muted: theme("colors.neutral.700");
     --color-text-inverted: theme("colors.sky.300");
     --color-text-accent: theme("colors.sky.300");
+    --color-text-check: theme("colors.green.300");
     --color-fill: theme("colors.neutral.100");
     --color-accent-fill: theme("colors.sky.300");
     --color-old-neutral: 238, 240, 244;
@@ -76,6 +80,7 @@
     --color-text-muted: theme("colors.rose.50");
     --color-text-inverted: theme("colors.yellow.300");
     --color-text-accent: theme("colors.teal.200");
+    --color-text-check: theme("colors.green.300");
     --color-fill: theme("colors.neutral.100");
     --color-accent-fill: theme("colors.sky.300");
     --color-old-neutral: 238, 240, 244;
@@ -89,16 +94,18 @@
   }
 
   .theme-three-base {
+    --primary-color: theme("colors.violet.300");
     --color-text-base: theme("colors.neutral.950");
     --color-text-muted: theme("colors.neutral.700");
-    --color-text-inverted: theme("colors.rose.400");
-    --color-text-accent: theme("colors.rose.400");
+    --color-text-inverted: theme("colors.violet.300");
+    --color-text-accent: theme("colors.violet.300");
+    --color-text-check: theme("colors.green.300");
     --color-fill: theme("colors.neutral.100");
-    --color-accent-fill: theme("colors.rose.400");
+    --color-accent-fill: "var(--primary-color)";
     --color-old-neutral: 238, 240, 244;
-    --color-accent: theme("colors.rose.400");
-    --color-button-accent: theme("colors.rose.400");
-    --color-button-accent-hover: theme("colors.rose.500");
+    --color-accent: "var(--primary-color)";
+    --color-button-accent: theme("colors.cyan.400");
+    --color-button-accent-hover: theme("colors.cyan.500");
     --color-button-muted: theme("colors.neutral.100");
 
     --delay-alternate-close: 250ms;
@@ -106,16 +113,18 @@
   }
 
   .theme-three-active {
+    --primary-color: theme("colors.violet.300");
     --color-text-base: theme("colors.neutral.50");
-    --color-text-muted: theme("colors.rose.50");
-    --color-text-inverted: theme("colors.amber.200");
-    --color-text-accent: theme("colors.teal.200");
+    --color-text-muted: theme("colors.neutral.50");
+    --color-text-inverted: theme("colors.green.200");
+    --color-text-accent: theme("colors.amber.200");
+    --color-text-check: theme("colors.green.200");
     --color-fill: theme("colors.neutral.100");
-    --color-accent-fill: theme("colors.rose.400");
+    --color-accent-fill: theme("colors.cyan.200");
     --color-old-neutral: 238, 240, 244;
-    --color-accent: theme("colors.rose.400");
-    --color-button-accent: theme("colors.rose.400");
-    --color-button-accent-hover: theme("colors.rose.500");
+    --color-accent: theme("colors.cyan.200");
+    --color-button-accent: theme("colors.cyan.200");
+    --color-button-accent-hover: theme("colors.cyan.500");
     --color-button-muted: theme("colors.neutral.100");
 
     --delay-alternate-close: 450ms;
