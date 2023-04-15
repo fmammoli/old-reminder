@@ -34,6 +34,8 @@ export type MedicineType = {
   theme: string;
   checked: boolean;
   icon: StaticImageData;
+  shouldTaketAt: string;
+  takenAt?: string;
 };
 
 const medicineList: MedicineType[] = [
@@ -47,6 +49,7 @@ const medicineList: MedicineType[] = [
     theme: "theme-one",
     checked: false,
     icon: icon,
+    shouldTaketAt: "09:00",
   },
   {
     id: "2",
@@ -58,6 +61,7 @@ const medicineList: MedicineType[] = [
     theme: "theme-two",
     checked: false,
     icon: icon,
+    shouldTaketAt: "12:00",
   },
   {
     id: "3",
@@ -69,6 +73,7 @@ const medicineList: MedicineType[] = [
     theme: "theme-three",
     checked: false,
     icon: icon,
+    shouldTaketAt: "22:00",
   },
   {
     id: "4",
@@ -80,6 +85,7 @@ const medicineList: MedicineType[] = [
     theme: "theme-four",
     checked: false,
     icon: icon,
+    shouldTaketAt: "24:00",
   },
 ];
 
@@ -97,23 +103,35 @@ export default function Home() {
     event: ChangeEvent<HTMLInputElement>,
     newChecked: string[]
   ) {
+    const takenAt = new Date().toLocaleString("pt-Br", {
+      hour: "2-digit",
+      minute: "2-digit",
+    });
     setMedicines((medicines) =>
       medicines.map((item) => {
         return {
           ...item,
           checked: newChecked.includes(`check-${item.id}`),
+          takenAt: newChecked.includes(`check-${item.id}`)
+            ? takenAt
+            : undefined,
         };
       })
     );
 
     setCurrent((c) => {
-      return { ...c, checked: newChecked.includes(`check-${c.id}`) };
+      return {
+        ...c,
+        checked: newChecked.includes(`check-${c.id}`),
+        takenAt: newChecked.includes(`check-${c.id}`) ? takenAt : undefined,
+      };
     });
 
+    const currentIndex = medicines.findIndex((a) => a.id === current.id);
     if (theme.includes("base")) {
-      setTheme(themes[0][1]);
+      setTheme(themes[currentIndex][1]);
     } else {
-      setTheme(themes[0][0]);
+      setTheme(themes[currentIndex][0]);
     }
     setFade(!fade);
   }
@@ -184,7 +202,10 @@ export default function Home() {
             <Hole fade={fade}></Hole>
           </div>
 
-          <ScheduledTime></ScheduledTime>
+          <ScheduledTime
+            scheduledTo={current.shouldTaketAt}
+            checkedAt={current.takenAt}
+          ></ScheduledTime>
 
           <div className="flex flex-col justify-center px-10">
             <div className="pt-12">
