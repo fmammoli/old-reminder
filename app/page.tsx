@@ -7,6 +7,8 @@ import Link from "next/link";
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
 import { MedicineType } from "./day/[id]/page";
+import { BottomSheet } from "./BottomSheet";
+import Overlay from "./Overlay";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -69,6 +71,8 @@ export default function Home() {
   const [date, setDate] = useState(now);
   const [data, setData] = useState(remindersData);
 
+  const [modal, setModal] = useState(false);
+
   const dateString = date.toLocaleDateString("pt-Br", {
     day: "2-digit",
     month: "2-digit",
@@ -78,13 +82,14 @@ export default function Home() {
   function handleCalendarChange(value: Date | null | (Date | null)[]) {
     if (value && !Array.isArray(value)) {
       setDate(value);
+      setModal(!modal);
     }
   }
 
   return (
     <main
       className={
-        "bg-neutral-100  md:container md:mx-auto md:my-4 md:rounded-xl"
+        "bg-neutral-100 md:container md:mx-auto md:my-4 md:rounded-xl overflow-hidden max-h-screen"
       }
     >
       <section>
@@ -141,107 +146,114 @@ export default function Home() {
           onChange={handleCalendarChange}
         ></Calendar>
       </section>
-      <section>
-        <div className="bg-skin-accent-fill py-4 mt-4 rounded-t-xl max-w-2xl mx-auto">
-          <div className="max-w-md mx-auto w-1/2 h-2 bg-neutral-200 rounded-full mt-4"></div>
+      <section className="">
+        <Overlay isVisible={modal} onClose={() => setModal(false)}></Overlay>
+        <BottomSheet
+          isOpen={modal}
+          onOpen={() => console.log("open")}
+          onClose={() => setModal(false)}
+        >
+          <div className="bg-skin-accent-fill py-4 rounded-t-xl max-w-2xl mx-auto">
+            <div className="max-w-md mx-auto w-1/2 h-2 bg-neutral-200 rounded-full mt-4"></div>
 
-          <div className=" px-4 my-4 flex justify-between">
-            <h2 className="text-lg text-skin-inverted capitalize">
-              {date.toLocaleDateString("pt-Br", {
-                weekday: "long",
-                day: "2-digit",
-                month: "long",
-              })}
-            </h2>
-            <button className="rounded-full bg-amber-200 w-8 h-8 flex justify-center items-center active:bg-amber-300">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                strokeWidth={1.5}
-                stroke="currentColor"
-                className="w-6 h-6 text-skin-accent"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M12 4.5v15m7.5-7.5h-15"
-                />
-              </svg>
-            </button>
-          </div>
+            <div className=" px-4 my-4 flex justify-between">
+              <h2 className="text-lg text-skin-inverted capitalize">
+                {date.toLocaleDateString("pt-Br", {
+                  weekday: "long",
+                  day: "2-digit",
+                  month: "long",
+                })}
+              </h2>
+              <button className="rounded-full bg-amber-200 w-8 h-8 flex justify-center items-center active:bg-amber-300">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  strokeWidth={1.5}
+                  stroke="currentColor"
+                  className="w-6 h-6 text-skin-accent"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M12 4.5v15m7.5-7.5h-15"
+                  />
+                </svg>
+              </button>
+            </div>
 
-          <div className=" px-4">
-            <ul className="flex flex-col gap-2">
-              {data[dateString]?.reminders?.map((item) => {
-                return (
-                  <li
-                    key={item.id}
-                    className=" bg-skin-fill border-neutral-200 rounded-lg "
-                  >
-                    <Link
-                      href={`/day/${dateString.split("/").join("-")}`}
-                      className="flex gap-4 p-4"
+            <div className=" px-4">
+              <ul className="flex flex-col gap-2">
+                {data[dateString]?.reminders?.map((item) => {
+                  return (
+                    <li
+                      key={item.id}
+                      className=" bg-skin-fill border-neutral-200 rounded-lg "
                     >
-                      <div
-                        className={`relative h-20 w-20 rounded-full  p-1 ${item.color}`}
+                      <Link
+                        href={`/day/${dateString.split("/").join("-")}`}
+                        className="flex gap-4 p-4"
                       >
-                        <Image src={item.icon} alt={""}></Image>
-                      </div>
-                      <div className="grow">
-                        <h3
-                          className={`text-lg text-sky-500 font-sans font-medium`}
+                        <div
+                          className={`relative h-20 w-20 rounded-full  p-1 ${item.color}`}
                         >
-                          {item.title} <span>, {item.concentration}</span>
-                        </h3>
-                        <p className="text-md text-neutral-600 font-light">{`${item.amount}, ${item.frequency}`}</p>
-                        <div className="flex justify-between">
-                          <div className="flex gap-1 py-1 items-center">
-                            <p className="text-md text-neutral-600 font-light">
-                              {item.shouldTaketAt}
-                            </p>
-                            <span className="inline-block ">
+                          <Image src={item.icon} alt={""}></Image>
+                        </div>
+                        <div className="grow">
+                          <h3
+                            className={`text-lg text-sky-500 font-sans font-medium`}
+                          >
+                            {item.title} <span>, {item.concentration}</span>
+                          </h3>
+                          <p className="text-md text-neutral-600 font-light">{`${item.amount}, ${item.frequency}`}</p>
+                          <div className="flex justify-between">
+                            <div className="flex gap-1 py-1 items-center">
+                              <p className="text-md text-neutral-600 font-light">
+                                {item.shouldTaketAt}
+                              </p>
+                              <span className="inline-block ">
+                                <svg
+                                  xmlns="http://www.w3.org/2000/svg"
+                                  fill="none"
+                                  viewBox="0 0 24 24"
+                                  strokeWidth={1.5}
+                                  stroke="currentColor"
+                                  className="w-[1.1rem] h-[1.1rem] align-baseline text-neutral-600"
+                                >
+                                  <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z"
+                                  />
+                                </svg>
+                              </span>
+                            </div>
+                            <button>
                               <svg
                                 xmlns="http://www.w3.org/2000/svg"
                                 fill="none"
                                 viewBox="0 0 24 24"
                                 strokeWidth={1.5}
                                 stroke="currentColor"
-                                className="w-[1.1rem] h-[1.1rem] align-baseline text-neutral-600"
+                                className="w-6 h-6 text-yellow-400 stroke-2"
                               >
                                 <path
                                   strokeLinecap="round"
                                   strokeLinejoin="round"
-                                  d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z"
+                                  d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0M3.124 7.5A8.969 8.969 0 015.292 3m13.416 0a8.969 8.969 0 012.168 4.5"
                                 />
                               </svg>
-                            </span>
+                            </button>
                           </div>
-                          <button>
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              fill="none"
-                              viewBox="0 0 24 24"
-                              strokeWidth={1.5}
-                              stroke="currentColor"
-                              className="w-6 h-6 text-yellow-400 stroke-2"
-                            >
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0M3.124 7.5A8.969 8.969 0 015.292 3m13.416 0a8.969 8.969 0 012.168 4.5"
-                              />
-                            </svg>
-                          </button>
                         </div>
-                      </div>
-                    </Link>
-                  </li>
-                );
-              })}
-            </ul>
+                      </Link>
+                    </li>
+                  );
+                })}
+              </ul>
+            </div>
           </div>
-        </div>
+        </BottomSheet>
       </section>
     </main>
   );
