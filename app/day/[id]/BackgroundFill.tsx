@@ -5,7 +5,7 @@ const fill = {
   open: ({ height = 1000 }) => {
     // console.log("open");
     return {
-      clipPath: `circle(${1000 * 2 + 200}px at 50% 45%)`,
+      clipPath: `circle(${1000 * 2 + 200}px at 50% 20rem)`,
       transition: {
         delay: 0.45,
         type: "spring",
@@ -17,7 +17,7 @@ const fill = {
   closed: () => {
     // console.log("closed");
     return {
-      clipPath: "circle(30px at 50% 45%)",
+      clipPath: "circle(30px at 50% 19rem)",
       transition: {
         type: "spring",
         delay: 0,
@@ -56,7 +56,7 @@ export function FillBackgroundBase({
       <motion.div
         ref={containerRef}
         id="fillBackgroundContainer"
-        className={`absolute w-full h-full`}
+        className={`absolute w-full h-full top-0 left-0`}
         custom={dimensions.current.height}
       >
         {false ? (
@@ -69,12 +69,12 @@ export function FillBackgroundBase({
             {isVisible && (
               <motion.div
                 key={"myAnimation"}
-                id="fillBackground"
+                id="fillBackgroundInner"
                 variants={fill}
                 initial={"closed"}
                 animate={"open"}
                 exit={"closed"}
-                className={`absolute w-full h-full ${color} transition-colors duration-700`}
+                className={`w-full h-full ${color} transition-colors duration-700`}
                 custom={{ height: dimensions.current.height, color: color }}
               ></motion.div>
             )}

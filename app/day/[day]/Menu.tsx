@@ -1,3 +1,5 @@
+import React from "react";
+
 export default function Menu({ title }: { title: string }) {
   return (
     <nav className="flex justify-between items-center px-4 py-4 text-skin-base transition-colors delay-skin-alternate-far">
