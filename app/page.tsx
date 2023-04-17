@@ -82,7 +82,11 @@ export default function Home() {
   }
 
   return (
-    <main className={"bg-neutral-100"}>
+    <main
+      className={
+        "bg-neutral-100  md:container md:mx-auto md:my-4 md:rounded-xl"
+      }
+    >
       <section>
         <nav className="flex justify-between items-center pt-4 max-w-2xl mx-auto">
           <button className="relative w-8 h-8 rounded-full shadow-sm border-neutral-200 border-1 flex justify-center items-center ">
@@ -103,7 +107,9 @@ export default function Home() {
           </button>
 
           <div>
-            <h1 className="font-sans text-2xl text-skin-muted">Title</h1>
+            <h1 className="font-sans text-2xl text-skin-accent font-extrabold decoration-wavy decoration-yellow-400 underline">
+              Reminder
+            </h1>
           </div>
           <button className="relative w-12 h-12 rounded-full text-neutral-500 flex justify-center items-center ">
             <svg
