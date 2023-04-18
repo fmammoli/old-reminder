@@ -133,10 +133,6 @@
   }
 }
 
-.__aaa {
-  color: blue;
-}
-
 .react-calendar {
   width: 100%;
   border: none;
@@ -169,9 +165,8 @@ abbr:where([title]) {
 }
 
 .react-calendar__tile {
-  padding-block: 2rem;
-  margin-block: 0.25rem;
   border-radius: 8px 8px;
+  padding-block: 1.5rem;
 }
 
 .react-calendar__month-view__weekdays__weekday {
@@ -200,11 +195,11 @@ abbr:where([title]) {
 }
 
 .react-calendar__tile--now {
-  color: #f87171;
+  color: rgb(247, 205, 37);
 }
 .react-calendar__tile--now:enabled:hover,
 .react-calendar__tile--now:enabled:focus {
-  background-color: #f87171;
+  background-color: rgb(247, 205, 37);
   color: var(--color-text-inverted);
 }
 

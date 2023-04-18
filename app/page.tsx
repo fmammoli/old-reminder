@@ -2,13 +2,22 @@
 import Image, { StaticImageData } from "next/image";
 import { Inter } from "next/font/google";
 import icon from "/public/images/capsule.png";
-import { ChangeEvent, useEffect, useRef, useState } from "react";
+import {
+  ChangeEvent,
+  MouseEventHandler,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import Link from "next/link";
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
 import { MedicineType } from "./day/[id]/page";
 import { BottomSheet } from "./BottomSheet";
+
 import Overlay from "./Overlay";
+import MedicineListItem from "./MedicineListItem";
+import MedicineList from "./MedicineList";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -29,7 +38,7 @@ const medicineList: MedicineType[] = [
     frequency: "once a day",
     color: "bg-rose-400",
     theme: "theme-one",
-    checked: false,
+    checked: true,
     icon: icon,
     shouldTaketAt: "09:00",
   },
@@ -82,14 +91,66 @@ export default function Home() {
   function handleCalendarChange(value: Date | null | (Date | null)[]) {
     if (value && !Array.isArray(value)) {
       setDate(value);
-      setModal(!modal);
+      if (
+        data[
+          value.toLocaleDateString("pt-Br", {
+            day: "2-digit",
+            month: "2-digit",
+            year: "numeric",
+          })
+        ]?.reminders?.length > 0
+      ) {
+        setModal(!modal);
+      }
     }
   }
 
+  function handleBottomSheetDoubleClick(event: any) {
+    console.log(event.detail);
+    if (event.detail >= 2) {
+      setModal((modalState) => !modalState);
+    }
+  }
+
+  const toLocaleStringOptions = {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+  };
+  let toCompleteSheetList = 6;
+  if (
+    data[
+      date.toLocaleDateString("br", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+      })
+    ]?.reminders?.length
+  ) {
+    toCompleteSheetList =
+      toCompleteSheetList -
+        data[
+          date.toLocaleDateString("br", {
+            day: "2-digit",
+            month: "2-digit",
+            year: "numeric",
+          })
+        ]?.reminders?.length <
+      0
+        ? 0
+        : toCompleteSheetList -
+          data[
+            date.toLocaleDateString("br", {
+              day: "2-digit",
+              month: "2-digit",
+              year: "numeric",
+            })
+          ]?.reminders?.length;
+  }
   return (
     <main
       className={
-        "bg-neutral-100 md:container md:mx-auto md:my-4 md:rounded-xl overflow-hidden max-h-screen"
+        "bg-skin-fill md:container md:mx-auto md:py-4 md:rounded-xl overflow-hidden max-h-screen h-screen"
       }
     >
       <section>
@@ -134,127 +195,99 @@ export default function Home() {
           </button>
         </nav>
       </section>
-      <section>
-        <Calendar
-          value={date}
-          locale="pt-Br"
-          prev2Label={null}
-          next2Label={null}
-          className={"bg-neutral-100 max-w-2xl mx-auto px-4"}
-          maxDetail={"month"}
-          minDetail={"month"}
-          onChange={handleCalendarChange}
-        ></Calendar>
-      </section>
-      <section className="">
-        <Overlay isVisible={modal} onClose={() => setModal(false)}></Overlay>
-        <BottomSheet
-          isOpen={modal}
-          onOpen={() => console.log("open")}
-          onClose={() => setModal(false)}
-        >
-          <div className="bg-skin-accent-fill py-4 rounded-t-xl max-w-2xl mx-auto">
-            <div className="max-w-md mx-auto w-1/2 h-2 bg-neutral-200 rounded-full mt-4"></div>
-
-            <div className=" px-4 my-4 flex justify-between">
-              <h2 className="text-lg text-skin-inverted capitalize">
-                {date.toLocaleDateString("pt-Br", {
-                  weekday: "long",
-                  day: "2-digit",
-                  month: "long",
-                })}
-              </h2>
-              <button className="rounded-full bg-amber-200 w-8 h-8 flex justify-center items-center active:bg-amber-300">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  strokeWidth={1.5}
-                  stroke="currentColor"
-                  className="w-6 h-6 text-skin-accent"
+      <div className="bg-skin-fill">
+        <section>
+          <Calendar
+            value={date}
+            locale="pt-Br"
+            prev2Label={null}
+            next2Label={null}
+            className={"bg-neutral-100 max-w-2xl mx-auto px-4"}
+            maxDetail={"month"}
+            minDetail={"month"}
+            onChange={handleCalendarChange}
+            tileContent={({ date }) => {
+              const dateKey = date.toLocaleDateString("pt-Br", {
+                day: "2-digit",
+                month: "2-digit",
+                year: "numeric",
+              });
+              return (
+                <div
+                  className={`flex justify-center items-center gap-1 pt-3 h-2`}
                 >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M12 4.5v15m7.5-7.5h-15"
-                  />
-                </svg>
-              </button>
-            </div>
-
-            <div className=" px-4">
-              <ul className="flex flex-col gap-2">
-                {data[dateString]?.reminders?.map((item) => {
-                  return (
-                    <li
-                      key={item.id}
-                      className=" bg-skin-fill border-neutral-200 rounded-lg "
+                  {data[dateKey]?.reminders?.map((item, i) => (
+                    <div
+                      key={`mini-indicator-${i}`}
+                      className={`rounded-full  h-2 w-2  ${
+                        item.checked ? item.color : "bg-neutral-300"
+                      }`}
+                    ></div>
+                  ))}
+                </div>
+              );
+            }}
+          ></Calendar>
+        </section>
+        <section className="bg-skin-fill mt-1">
+          <Overlay isVisible={modal} onClose={() => setModal(false)}></Overlay>
+          <div>
+            <BottomSheet
+              isOpen={modal}
+              onOpen={() => setModal(true)}
+              onClose={() => setModal(false)}
+            >
+              <div className="bg-skin-accent-fill rounded-t-xl max-w-2xl mx-auto border-2 border-sky-500">
+                <div
+                  className="cursor-grab active:cursor-grabbing py-4"
+                  onClick={handleBottomSheetDoubleClick}
+                >
+                  <div className="max-w-md mx-auto w-1/2 h-2 bg-neutral-200 rounded-full mt-4"></div>
+                </div>
+                <div className=" px-4 my-4 flex justify-between">
+                  <h2 className="text-lg text-skin-inverted capitalize">
+                    {date.toLocaleDateString("pt-Br", {
+                      weekday: "long",
+                      day: "2-digit",
+                      month: "long",
+                    })}
+                  </h2>
+                  <button className="rounded-full bg-amber-200 w-8 h-8 flex justify-center items-center active:bg-amber-300">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      strokeWidth={1.5}
+                      stroke="currentColor"
+                      className="w-6 h-6 text-skin-accent"
                     >
-                      <Link
-                        href={`/day/${dateString.split("/").join("-")}`}
-                        className="flex gap-4 p-4"
-                      >
-                        <div
-                          className={`relative h-20 w-20 rounded-full  p-1 ${item.color}`}
-                        >
-                          <Image src={item.icon} alt={""}></Image>
-                        </div>
-                        <div className="grow">
-                          <h3
-                            className={`text-lg text-sky-500 font-sans font-medium`}
-                          >
-                            {item.title} <span>, {item.concentration}</span>
-                          </h3>
-                          <p className="text-md text-neutral-600 font-light">{`${item.amount}, ${item.frequency}`}</p>
-                          <div className="flex justify-between">
-                            <div className="flex gap-1 py-1 items-center">
-                              <p className="text-md text-neutral-600 font-light">
-                                {item.shouldTaketAt}
-                              </p>
-                              <span className="inline-block ">
-                                <svg
-                                  xmlns="http://www.w3.org/2000/svg"
-                                  fill="none"
-                                  viewBox="0 0 24 24"
-                                  strokeWidth={1.5}
-                                  stroke="currentColor"
-                                  className="w-[1.1rem] h-[1.1rem] align-baseline text-neutral-600"
-                                >
-                                  <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z"
-                                  />
-                                </svg>
-                              </span>
-                            </div>
-                            <button>
-                              <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                fill="none"
-                                viewBox="0 0 24 24"
-                                strokeWidth={1.5}
-                                stroke="currentColor"
-                                className="w-6 h-6 text-yellow-400 stroke-2"
-                              >
-                                <path
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0M3.124 7.5A8.969 8.969 0 015.292 3m13.416 0a8.969 8.969 0 012.168 4.5"
-                                />
-                              </svg>
-                            </button>
-                          </div>
-                        </div>
-                      </Link>
-                    </li>
-                  );
-                })}
-              </ul>
-            </div>
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M12 4.5v15m7.5-7.5h-15"
+                      />
+                    </svg>
+                  </button>
+                </div>
+
+                <div className=" px-4  h-200px overflow-y-auto">
+                  <MedicineList fill={toCompleteSheetList}>
+                    {data[dateString]?.reminders?.map((item) => {
+                      return (
+                        <MedicineListItem
+                          key={item.id}
+                          dateString={dateString}
+                          {...item}
+                        ></MedicineListItem>
+                      );
+                    })}
+                  </MedicineList>
+                </div>
+              </div>
+            </BottomSheet>
           </div>
-        </BottomSheet>
-      </section>
+        </section>
+      </div>
     </main>
   );
 }

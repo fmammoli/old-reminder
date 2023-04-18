@@ -11,7 +11,8 @@ export default function Overlay({
     <AnimatePresence>
       {isVisible && (
         <motion.div
-          className="absolute h-full w-full top-0 left-0 bg-[#00000070]"
+          id={"overlay"}
+          className="absolute h-full w-full top-0 left-0 bg-[#00000000]"
           onClick={onClose}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}

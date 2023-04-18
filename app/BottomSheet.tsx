@@ -48,12 +48,12 @@ export function BottomSheet({
         stiffness: 400,
       }}
       variants={{
-        visible: { y: "-80%" },
+        visible: { y: "-50%" },
         hidden: { y: 0 },
       }}
       dragConstraints={{}}
       dragElastic={0.2}
-      className="inline-block w-full rounded-t-lg"
+      className="inline-block w-full rounded-t-lg "
     >
       {children}
     </motion.div>
