@@ -9,6 +9,18 @@ import { Html5QrcodeScanner } from "html5-qrcode";
 import { Html5Qrcode } from "html5-qrcode";
 import Html5QrcodePlugin from "./HTML5Qrcodeplugin";
 
+import NameSearch from "./NameSearch";
+
+import {
+  useQuery,
+  useMutation,
+  useQueryClient,
+  QueryClient,
+  QueryClientProvider,
+} from "react-query";
+
+const queryClient = new QueryClient();
+
 export default function NewReminderForm({
   iconList,
   colorList,
@@ -140,21 +152,10 @@ export default function NewReminderForm({
               />
             )}
           </div>
-          <div className="relative z-0 flex mb-4 gap-2">
-            <input
-              type="text"
-              id="name"
-              className="block rounded-t-lg px-2.5 pb-2.5 pt-5 w-full text-sm text-gray-900 bg-gray-50 dark:bg-gray-700 border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
-              placeholder=" "
-              value={name || ""}
-              onChange={handleNameChange}
-            />
-            <label
-              htmlFor="name"
-              className="absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-4 scale-75 top-4 z-10 origin-[0] left-2.5 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-4"
-            >
-              Nome do remédio
-            </label>
+          <div className="flex mb-4 gap-2">
+            <QueryClientProvider client={queryClient}>
+              <NameSearch value={name} onChange={handleNameChange}></NameSearch>
+            </QueryClientProvider>
             <div className="mt-1 mr-1">
               <input
                 id={"scanToggle"}
@@ -187,30 +188,6 @@ export default function NewReminderForm({
                   />
                 </svg>
               </label>
-              <button
-                onClick={handleScanClick}
-                className=" hidden border-sky-400 border-2 text-skin-accent rounded-xl  hover:text-skin-inverted hover:bg-sky-300 hover:scale-110 active:bg-skin-accent-fill "
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  strokeWidth={1.5}
-                  stroke="currentColor"
-                  className="w-12 h-12"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M3.75 4.875c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5A1.125 1.125 0 013.75 9.375v-4.5zM3.75 14.625c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5a1.125 1.125 0 01-1.125-1.125v-4.5zM13.5 4.875c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5A1.125 1.125 0 0113.5 9.375v-4.5z"
-                  />
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M6.75 6.75h.75v.75h-.75v-.75zM6.75 16.5h.75v.75h-.75v-.75zM16.5 6.75h.75v.75h-.75v-.75zM13.5 13.5h.75v.75h-.75v-.75zM13.5 19.5h.75v.75h-.75v-.75zM19.5 13.5h.75v.75h-.75v-.75zM19.5 19.5h.75v.75h-.75v-.75zM16.5 16.5h.75v.75h-.75v-.75z"
-                  />
-                </svg>
-              </button>
             </div>
           </div>
 
@@ -228,7 +205,7 @@ export default function NewReminderForm({
               Concentração
             </label>
           </div>
-          <div className="md:flex items-center my-4 gap-8">
+          <div className="md:flex items-center my-4 gap-8 relative isolate">
             <div className="relative z-0 my-4">
               <input
                 type="text"

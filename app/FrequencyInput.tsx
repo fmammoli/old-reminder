@@ -33,7 +33,7 @@ export default function FrequencyInput({}) {
   }
 
   return (
-    <div className="relative z-0 flex ">
+    <div className="relative z-0 flex isolate">
       <MoveButton onClick={handlePrev}>
         <svg
           xmlns="http://www.w3.org/2000/svg"
