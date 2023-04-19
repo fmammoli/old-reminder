@@ -205,6 +205,50 @@ abbr:where([title]) {
   color: var(--color-text-inverted);
 }
 
+#html5qr-code-full-region__scan_region {
+  display: flex;
+  justify-content: center;
+}
+
+#html5qr-code-full-region__dashboard_section_csr > div {
+  display: flex;
+  justify-content: center;
+}
+
+#html5-qrcode-button-camera-permission {
+  visibility: hidden;
+  position: relative;
+}
+
+#html5-qrcode-button-camera-permission::after {
+  visibility: visible;
+  position: absolute;
+  top: 0;
+  left: 0;
+  content: "Escanear com a câmera";
+}
+
+#html5qr-code-full-region__dashboard_section > div:nth-child(2) {
+  display: flex;
+  justify-content: center;
+}
+
+#html5-qrcode-anchor-scan-type-change {
+  visibility: hidden;
+  position: relative;
+  width: 300px;
+  display: block;
+}
+
+#html5-qrcode-anchor-scan-type-change::after {
+  visibility: visible;
+  position: absolute;
+  top: 0;
+  left: 0;
+  content: "Escanear um arquivo";
+  text-decoration: underline;
+}
+
 /* 
 :root {
   --foreground-rgb: 0, 0, 0;

@@ -62,7 +62,7 @@ export function BottomSheet({
       variants={{
         visible: (height) => {
           return {
-            y: "-60svh",
+            y: "-72svh",
             transition: { delay: 0.18 },
           };
         },

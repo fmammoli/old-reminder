@@ -272,7 +272,7 @@ export default function Home() {
   return (
     <main
       className={
-        "relative bg-skin-fill md:container md:mx-auto md:rounded-xl md:my-2 overflow-hidden max-h-screen h-screen"
+        "relative bg-skin-fill md:container md:mx-auto md:rounded-xl md:py-2 overflow-hidden max-h-screen h-screen"
       }
     >
       <section>
