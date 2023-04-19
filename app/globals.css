@@ -166,7 +166,9 @@ abbr:where([title]) {
 
 .react-calendar__tile {
   border-radius: 8px 8px;
-  padding-block: 1.5rem;
+  padding-block: 1.25rem;
+  transition: background-color 102ms ease-out;
+  color: var(--color-text-accent);
 }
 
 .react-calendar__month-view__weekdays__weekday {

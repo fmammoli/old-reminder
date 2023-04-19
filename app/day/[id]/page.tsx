@@ -2,6 +2,13 @@
 import Image, { StaticImageData } from "next/image";
 import { Inter } from "next/font/google";
 import icon from "/public/images/capsule.png";
+
+import PillIcon from "/public/images/icons8-pill-100.png";
+import PillIcon2 from "/public/images/icons8-pill-64.png";
+import PillsIcon from "/public/images/icons8-pills-100.png";
+import MdmaIcon from "/public/images/icons8-mdma-100.png";
+import BandageIcon from "/public/images/icons8-bandage-100.png";
+
 import { ChangeEvent, useEffect, useRef, useState } from "react";
 import Menu from "./Menu";
 import Title from "./Title";
@@ -48,7 +55,7 @@ const medicineList: MedicineType[] = [
     color: "bg-rose-400",
     theme: "theme-one",
     checked: false,
-    icon: icon,
+    icon: PillIcon,
     shouldTaketAt: "09:00",
   },
   {
@@ -60,7 +67,7 @@ const medicineList: MedicineType[] = [
     color: "bg-sky-400",
     theme: "theme-two",
     checked: false,
-    icon: icon,
+    icon: PillsIcon,
     shouldTaketAt: "12:00",
   },
   {
@@ -72,7 +79,7 @@ const medicineList: MedicineType[] = [
     color: "bg-violet-300",
     theme: "theme-three",
     checked: false,
-    icon: icon,
+    icon: BandageIcon,
     shouldTaketAt: "22:00",
   },
 ];
@@ -86,11 +93,7 @@ const data = {
 export default function Home() {
   const [medicines, setMedicines] = useState(medicineList);
   const [theme, setTheme] = useState<string>("theme-one-base");
-
-  const [checked, setChecked] = useState<string[]>([]);
-
   const [current, setCurrent] = useState(medicineList[0]);
-
   const [fade, setFade] = useState(false);
 
   function handleButtonClick(
@@ -129,8 +132,6 @@ export default function Home() {
     }
     setFade(!fade);
   }
-
-  const [preserve, setPreserve] = useState(false);
 
   function handleSlideChange(current: number, direction: "+1" | "-1") {
     if (medicines[current].checked === true) {
@@ -220,30 +221,8 @@ export default function Home() {
                   </svg>
                 }
               >
-                <p className="py-4 leading-relaxed">
-                  Azitromicina é um antibiótico usado no tratamento de várias
-                  infecções bacterianas.[1] Entre as indicações mais comuns
-                  estão no tratamento de otite média, faringite estreptocócica,
-                  pneumonia, diarreia do viajante e outras infecções
-                  intestinais.[1] Pode também ser usada no tratamento de várias
-                  infecções sexualmente transmissíveis, incluindo clamídia e
-                  gonorreia.[1] Em associação com outros fármacos, pode também
-                  ser usada no tratamento de malária.[1] Pode ser administrada
-                  por via oral ou intravenosa ou endovenosa.[1]
-                </p>
-                <p>
-                  Os efeitos adversos mais comuns são náuseas, vómitos, diarreia
-                  e indisposição no estômago.[1] Entre outros possíveis efeitos
-                  adversos, menos comuns, estão reações alérgicas, como
-                  anafilaxia, QT longo ou um tipo de diarreia causado por
-                  Clostridium difficile.[1] O uso durante a gravidez não está
-                  indicado exceto em caso de necessidade expressa.[2][1] A sua
-                  segurança durante a amamentação não está firmemente
-                  estabelecida, mas é provavelmente segura.[3] A azitromicina é
-                  um antibiótico do grupo dos macrólidos.[1] O mecanismo de ação
-                  envolve a diminuição da produção de proteínas, impedindo o
-                  crescimento das bactérias.[1]
-                </p>
+                <p className="py-4 leading-relaxed">a</p>
+                <p>q</p>
               </Description>
             </div>
           </div>

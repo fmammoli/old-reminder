@@ -2,6 +2,15 @@
 import Image, { StaticImageData } from "next/image";
 import { Inter } from "next/font/google";
 import icon from "/public/images/capsule.png";
+import PillIcon from "/public/images/icons8-pill-100.png";
+import PillsIcon from "/public/images/icons8-pills-100.png";
+import MdmaIcon from "/public/images/icons8-mdma-100.png";
+import BandageIcon from "/public/images/icons8-bandage-100.png";
+import PillIcon3 from "/public/images/icons8-pill-64.png";
+import PillsIcon2 from "/public/images/icons8-pills-64.png";
+import PillsIcon4 from "/public/images/icons8-pills-68.png";
+import PillsIcon5 from "/public/images/icons8-pills-68 (1).png";
+
 import {
   ChangeEvent,
   MouseEventHandler,
@@ -18,6 +27,8 @@ import { BottomSheet } from "./BottomSheet";
 import Overlay from "./Overlay";
 import MedicineListItem from "./MedicineListItem";
 import MedicineList from "./MedicineList";
+import NewReminderForm from "./NewReminderForm";
+import { TileArgs } from "react-calendar/dist/cjs/shared/types";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -28,6 +39,27 @@ const formatedNow = now.toLocaleDateString("pt-Br", {
   month: "2-digit",
   year: "numeric",
 });
+
+const colorList = [
+  "bg-rose-400",
+  "bg-sky-400",
+  "bg-violet-300",
+  "bg-amber-300",
+  "bg-emerald-300",
+  "bg-indigo-500",
+];
+
+const iconList = [
+  icon,
+  PillIcon,
+  PillsIcon,
+  BandageIcon,
+  MdmaIcon,
+  PillIcon3,
+  PillsIcon2,
+  PillsIcon4,
+  PillsIcon5,
+];
 
 const medicineList: MedicineType[] = [
   {
@@ -56,6 +88,90 @@ const medicineList: MedicineType[] = [
   },
   {
     id: "3",
+    title: "Czitromicina",
+    concentration: "700mg",
+    amount: "1 capsule",
+    frequency: "once a day",
+    color: "bg-violet-300",
+    theme: "theme-three",
+    checked: false,
+    icon: icon,
+    shouldTaketAt: "22:00",
+  },
+  {
+    id: "4",
+    title: "Czitromicina",
+    concentration: "700mg",
+    amount: "1 capsule",
+    frequency: "once a day",
+    color: "bg-violet-300",
+    theme: "theme-three",
+    checked: false,
+    icon: icon,
+    shouldTaketAt: "22:00",
+  },
+  {
+    id: "5",
+    title: "Czitromicina",
+    concentration: "700mg",
+    amount: "1 capsule",
+    frequency: "once a day",
+    color: "bg-violet-300",
+    theme: "theme-three",
+    checked: false,
+    icon: icon,
+    shouldTaketAt: "22:00",
+  },
+  {
+    id: "6",
+    title: "Czitromicina",
+    concentration: "700mg",
+    amount: "1 capsule",
+    frequency: "once a day",
+    color: "bg-violet-300",
+    theme: "theme-three",
+    checked: false,
+    icon: icon,
+    shouldTaketAt: "22:00",
+  },
+  {
+    id: "7",
+    title: "Czitromicina",
+    concentration: "700mg",
+    amount: "1 capsule",
+    frequency: "once a day",
+    color: "bg-violet-300",
+    theme: "theme-three",
+    checked: false,
+    icon: icon,
+    shouldTaketAt: "22:00",
+  },
+  {
+    id: "8",
+    title: "Czitromicina",
+    concentration: "700mg",
+    amount: "1 capsule",
+    frequency: "once a day",
+    color: "bg-violet-300",
+    theme: "theme-three",
+    checked: false,
+    icon: icon,
+    shouldTaketAt: "22:00",
+  },
+  {
+    id: "9",
+    title: "Czitromicina",
+    concentration: "700mg",
+    amount: "1 capsule",
+    frequency: "once a day",
+    color: "bg-violet-300",
+    theme: "theme-three",
+    checked: false,
+    icon: icon,
+    shouldTaketAt: "22:00",
+  },
+  {
+    id: "10",
     title: "Czitromicina",
     concentration: "700mg",
     amount: "1 capsule",
@@ -112,49 +228,55 @@ export default function Home() {
     }
   }
 
-  const toLocaleStringOptions = {
-    day: "2-digit",
-    month: "2-digit",
-    year: "numeric",
-  };
   let toCompleteSheetList = 6;
-  if (
+  const reminders =
     data[
       date.toLocaleDateString("br", {
         day: "2-digit",
         month: "2-digit",
         year: "numeric",
       })
-    ]?.reminders?.length
-  ) {
-    toCompleteSheetList =
-      toCompleteSheetList -
-        data[
-          date.toLocaleDateString("br", {
-            day: "2-digit",
-            month: "2-digit",
-            year: "numeric",
-          })
-        ]?.reminders?.length <
-      0
-        ? 0
-        : toCompleteSheetList -
-          data[
-            date.toLocaleDateString("br", {
-              day: "2-digit",
-              month: "2-digit",
-              year: "numeric",
-            })
-          ]?.reminders?.length;
+    ]?.reminders || [];
+  toCompleteSheetList = Math.max(toCompleteSheetList - reminders.length, 0);
+
+  const [isFormOpen, setFormOpen] = useState(false);
+
+  function handleOpenForm() {
+    if (!modal) {
+      setModal(true);
+    }
+    setFormOpen(!isFormOpen);
   }
+
+  function tileContentIndicators({ date }: { date: Date }) {
+    const dateKey = date.toLocaleDateString("pt-Br", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+    });
+
+    return (
+      <div className={`flex justify-center items-center gap-1 pt-3 h-2`}>
+        {data[dateKey]?.reminders?.slice(0, 4).map((item, i) => (
+          <div
+            key={`mini-indicator-${i}`}
+            className={`rounded-full  h-2 w-2  ${
+              item.checked ? item.color : "bg-neutral-300"
+            }`}
+          ></div>
+        ))}
+      </div>
+    );
+  }
+
   return (
     <main
       className={
-        "bg-skin-fill md:container md:mx-auto md:py-4 md:rounded-xl overflow-hidden max-h-screen h-screen"
+        "relative bg-skin-fill md:container md:mx-auto md:rounded-xl md:my-2 overflow-hidden max-h-screen h-screen"
       }
     >
       <section>
-        <nav className="flex justify-between items-center pt-4 max-w-2xl mx-auto">
+        <nav className="flex justify-between items-center max-w-2xl mx-auto pt-2">
           <button className="relative w-8 h-8 rounded-full shadow-sm border-neutral-200 border-1 flex justify-center items-center ">
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -206,82 +328,90 @@ export default function Home() {
             maxDetail={"month"}
             minDetail={"month"}
             onChange={handleCalendarChange}
-            tileContent={({ date }) => {
-              const dateKey = date.toLocaleDateString("pt-Br", {
-                day: "2-digit",
-                month: "2-digit",
-                year: "numeric",
-              });
-              return (
-                <div
-                  className={`flex justify-center items-center gap-1 pt-3 h-2`}
-                >
-                  {data[dateKey]?.reminders?.map((item, i) => (
-                    <div
-                      key={`mini-indicator-${i}`}
-                      className={`rounded-full  h-2 w-2  ${
-                        item.checked ? item.color : "bg-neutral-300"
-                      }`}
-                    ></div>
-                  ))}
-                </div>
-              );
-            }}
+            tileContent={tileContentIndicators}
           ></Calendar>
         </section>
-        <section className="bg-skin-fill mt-1">
+        <section className="bg-skin-fill mt-1 oveflow-[initial]">
           <Overlay isVisible={modal} onClose={() => setModal(false)}></Overlay>
-          <div>
+          <div className=" w-full">
             <BottomSheet
               isOpen={modal}
               onOpen={() => setModal(true)}
-              onClose={() => setModal(false)}
+              onClose={() => {
+                setModal(false);
+                setFormOpen(false);
+              }}
+              popUpDistance={isFormOpen ? "top" : "middle"}
             >
-              <div className="bg-skin-accent-fill rounded-t-xl max-w-2xl mx-auto border-2 border-sky-500">
+              <div
+                className={`${
+                  isFormOpen ? "bg-skin-fill" : "bg-skin-accent-fill"
+                } rounded-t-xl max-w-2xl mx-auto border-2 border-sky-500`}
+              >
                 <div
-                  className="cursor-grab active:cursor-grabbing py-4"
+                  className="cursor-grab active:cursor-grabbing py-4 "
                   onClick={handleBottomSheetDoubleClick}
                 >
-                  <div className="max-w-md mx-auto w-1/2 h-2 bg-neutral-200 rounded-full mt-4"></div>
-                </div>
-                <div className=" px-4 my-4 flex justify-between">
-                  <h2 className="text-lg text-skin-inverted capitalize">
-                    {date.toLocaleDateString("pt-Br", {
-                      weekday: "long",
-                      day: "2-digit",
-                      month: "long",
-                    })}
-                  </h2>
-                  <button className="rounded-full bg-amber-200 w-8 h-8 flex justify-center items-center active:bg-amber-300">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      strokeWidth={1.5}
-                      stroke="currentColor"
-                      className="w-6 h-6 text-skin-accent"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="M12 4.5v15m7.5-7.5h-15"
-                      />
-                    </svg>
-                  </button>
+                  <div className="max-w-md mx-auto w-1/2 h-2 bg-neutral-200 rounded-full mt-4 hover:bg-neutral-300"></div>
                 </div>
 
-                <div className=" px-4  h-200px overflow-y-auto">
-                  <MedicineList fill={toCompleteSheetList}>
-                    {data[dateString]?.reminders?.map((item) => {
-                      return (
-                        <MedicineListItem
-                          key={item.id}
-                          dateString={dateString}
-                          {...item}
-                        ></MedicineListItem>
-                      );
-                    })}
-                  </MedicineList>
+                <div className="">
+                  {isFormOpen ? (
+                    <NewReminderForm
+                      iconList={iconList}
+                      colorList={colorList}
+                      date={date}
+                      onClose={() => {
+                        setFormOpen(false);
+                        setModal(false);
+                      }}
+                    ></NewReminderForm>
+                  ) : (
+                    <div className="px-4 ">
+                      <div className="mb-4 flex justify-between">
+                        <h2
+                          className={`text-lg ${"text-skin-inverted"} capitalize`}
+                        >
+                          {date.toLocaleDateString("pt-Br", {
+                            weekday: "long",
+                            day: "2-digit",
+                            month: "long",
+                          })}
+                        </h2>
+                        <button
+                          onClick={handleOpenForm}
+                          className="rounded-full bg-amber-200 w-8 h-8 flex justify-center items-center active:bg-amber-300 hover:scale-125 transition-transform"
+                        >
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            strokeWidth={1.5}
+                            stroke="currentColor"
+                            className="w-6 h-6 text-skin-accent"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              d="M12 4.5v15m7.5-7.5h-15"
+                            />
+                          </svg>
+                        </button>
+                      </div>
+
+                      <MedicineList fill={toCompleteSheetList}>
+                        {data[dateString]?.reminders?.map((item) => {
+                          return (
+                            <MedicineListItem
+                              key={item.id}
+                              dateString={dateString}
+                              {...item}
+                            ></MedicineListItem>
+                          );
+                        })}
+                      </MedicineList>
+                    </div>
+                  )}
                 </div>
               </div>
             </BottomSheet>

@@ -47,10 +47,8 @@ export default function FloatingButton({
             onChange={onChange}
             defaultChecked={false}
           />
-          <div
-            className={`relative w-20 h-20 max-w-full flex items-center justify-center`}
-          >
-            <div className={`w-full h-full rounded-full ${color}`}></div>
+          <div className={`relative flex items-center justify-center`}>
+            <div className={`w-28 h-28 rounded-full ${color}`}></div>
             <div className="absolute w-20 h-20">{children}</div>
           </div>
         </div>
