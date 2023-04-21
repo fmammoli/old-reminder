@@ -1,10 +1,16 @@
 import { Agent } from "https";
-import { ChangeEventHandler, FormEvent, useEffect, useState } from "react";
+import {
+  ChangeEventHandler,
+  FormEvent,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import { QueryClientProvider, useQuery, useQueryClient } from "react-query";
 import { useDebounce } from "use-debounce";
 import Downshift, { useCombobox } from "downshift";
-
-// import d from "/public/data.json";
+import { ViewportList } from "react-viewport-list";
+import d from "/public/busca.json";
 
 const books = [
   { author: "Harper Lee", title: "To Kill a Mockingbird" },
@@ -33,7 +39,7 @@ export default function NameSearch({
   value: string;
   onChange: ChangeEventHandler<HTMLInputElement>;
 }) {
-  // console.log(d);
+  console.log(d[0]);
   // const queryClient = useQueryClient();
   // const query = useQuery("searchData", fetchSearchData);
   // console.log(query);
@@ -55,16 +61,23 @@ export default function NameSearch({
     const lowerCasedInputValue = inputValue.toLowerCase();
 
     return function booksFilter(book: { title: string; author: string }) {
-      return (
-        !inputValue ||
-        book.title.toLowerCase().includes(lowerCasedInputValue) ||
-        book.author.toLowerCase().includes(lowerCasedInputValue)
-      );
+      if (lowerCasedInputValue.length > 0) {
+        return (
+          !inputValue || book.value.toLowerCase().includes(lowerCasedInputValue)
+          // book.title.toLowerCase().includes(lowerCasedInputValue) ||
+          // book.author.toLowerCase().includes(lowerCasedInputValue)
+        );
+      } else {
+        return "";
+      }
     };
   }
 
+  const ref = useRef<null | HTMLDivElement>(null);
+
+  const test = [1, 2, 3];
   function ComboBox() {
-    const [items, setItems] = useState(books);
+    const [items, setItems] = useState<{ value: string }[]>(d);
     const {
       isOpen,
       getToggleButtonProps,
@@ -76,13 +89,14 @@ export default function NameSearch({
       selectedItem,
     } = useCombobox({
       onInputValueChange({ inputValue }) {
-        setItems(books.filter(getBooksFilter(inputValue ? inputValue : "")));
+        setItems(d.filter(getBooksFilter(inputValue ? inputValue : "")));
       },
       items,
       itemToString(item) {
-        return item ? item.title : "";
+        return item ? item.value : "";
       },
     });
+
     return (
       <>
         <div className="relative w-full">
@@ -97,7 +111,7 @@ export default function NameSearch({
                 className="w-fit absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-4 scale-75 top-4 z-10 origin-[0] left-2.5 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-4"
                 {...getLabelProps()}
               >
-                Choose your favorite book:
+                Nome do medicamento:
               </label>
               <button
                 aria-label="toggle menu"
@@ -109,15 +123,16 @@ export default function NameSearch({
               </button>
             </div>
           </div>
-          <ul
-            className={`absolute w-full bg-white mt-1 shadow-md max-h-80 overflow-scroll p-0 z-20 ${
+          <div
+            className={`absolute w-full bg-white mt-1 shadow-md flex flex-col max-h-80 overflow-y-scroll  p-0 z-20 ${
               !(isOpen && items.length) && "hidden"
             }`}
+            ref={ref}
             {...getMenuProps()}
           >
             {isOpen &&
-              items.map((item: any, index) => (
-                <li
+              items.slice(0, 10).map((item, index) => (
+                <div
                   className={[
                     highlightedIndex === index && "bg-blue-300",
                     selectedItem === item && "font-bold",
@@ -126,11 +141,10 @@ export default function NameSearch({
                   key={`${item.value}${index}`}
                   {...getItemProps({ item, index })}
                 >
-                  <span>{item.title}</span>
-                  <span className="text-sm text-gray-700">{item.author}</span>
-                </li>
+                  <span className="text-sm text-gray-700">{item.value}</span>
+                </div>
               ))}
-          </ul>
+          </div>
         </div>
       </>
     );
@@ -144,4 +158,18 @@ export default function NameSearch({
 //       <p className="text-sm text-gray-500">Medley</p>
 //     </div>
 //   </div>
-// )}
+// // )}
+
+// // {/* {items.map((item: { value: string }, index: number) => (
+// <div
+//   className={[
+//     highlightedIndex === index && "bg-blue-300",
+//     selectedItem === item && "font-bold",
+//     "py-2 px-3 shadow-sm flex flex-col",
+//   ].join(" ")}
+//   key={`${item.value}${index}`}
+//   {...getItemProps({ item, index })}
+// >
+//   <span className="text-sm text-gray-700">{item.value}</span>
+// </div>;
+// //                 ))} */}

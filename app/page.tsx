@@ -193,7 +193,7 @@ const remindersData = {
   },
 };
 
-export default async function Home() {
+export default function Home() {
   const [date, setDate] = useState(now);
   const [data, setData] = useState(remindersData);
 
@@ -243,10 +243,10 @@ export default async function Home() {
   const [isFormOpen, setFormOpen] = useState(false);
 
   function handleOpenForm() {
-    // if (!modal) {
-    //   setModal(true);
-    // }
-    // setFormOpen(!isFormOpen);
+    if (!modal) {
+      setModal(true);
+    }
+    setFormOpen(!isFormOpen);
   }
 
   function tileContentIndicators({ date }: { date: Date }) {
@@ -358,16 +358,15 @@ export default async function Home() {
 
                 <div className="">
                   {isFormOpen ? (
-                    // <NewReminderForm
-                    //   iconList={iconList}
-                    //   colorList={colorList}
-                    //   date={date}
-                    //   onClose={() => {
-                    //     setFormOpen(false);
-                    //     setModal(false);
-                    //   }}
-                    // ></NewReminderForm>
-                    <div></div>
+                    <NewReminderForm
+                      iconList={iconList}
+                      colorList={colorList}
+                      date={date}
+                      onClose={() => {
+                        setFormOpen(false);
+                        setModal(false);
+                      }}
+                    ></NewReminderForm>
                   ) : (
                     <div className="px-4 ">
                       <div className="mb-4 flex justify-between">
