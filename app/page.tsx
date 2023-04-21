@@ -29,6 +29,7 @@ import MedicineListItem from "./MedicineListItem";
 import MedicineList from "./MedicineList";
 import NewReminderForm from "./NewReminderForm";
 import { TileArgs } from "react-calendar/dist/cjs/shared/types";
+import TimePicker from "./Picker";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -192,7 +193,7 @@ const remindersData = {
   },
 };
 
-export default function Home() {
+export default async function Home() {
   const [date, setDate] = useState(now);
   const [data, setData] = useState(remindersData);
 
@@ -242,10 +243,10 @@ export default function Home() {
   const [isFormOpen, setFormOpen] = useState(false);
 
   function handleOpenForm() {
-    if (!modal) {
-      setModal(true);
-    }
-    setFormOpen(!isFormOpen);
+    // if (!modal) {
+    //   setModal(true);
+    // }
+    // setFormOpen(!isFormOpen);
   }
 
   function tileContentIndicators({ date }: { date: Date }) {
@@ -357,15 +358,16 @@ export default function Home() {
 
                 <div className="">
                   {isFormOpen ? (
-                    <NewReminderForm
-                      iconList={iconList}
-                      colorList={colorList}
-                      date={date}
-                      onClose={() => {
-                        setFormOpen(false);
-                        setModal(false);
-                      }}
-                    ></NewReminderForm>
+                    // <NewReminderForm
+                    //   iconList={iconList}
+                    //   colorList={colorList}
+                    //   date={date}
+                    //   onClose={() => {
+                    //     setFormOpen(false);
+                    //     setModal(false);
+                    //   }}
+                    // ></NewReminderForm>
+                    <div></div>
                   ) : (
                     <div className="px-4 ">
                       <div className="mb-4 flex justify-between">

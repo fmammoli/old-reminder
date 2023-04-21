@@ -43,7 +43,6 @@ export function BottomSheet({
   useEffect(() => {
     if (containerRef.current) {
       const height = containerRef.current.offsetHeight;
-      console.log(height);
     }
   }, [isOpen]);
 
@@ -78,15 +77,6 @@ export function BottomSheet({
     </motion.div>
   );
 }
-
-//sm --- "calc(100svh*(2/3))"
-
-//63825
-//70916
-
-// md
-//45533.3333333
-//56916.6666667
 
 function usePrevious(value: boolean) {
   const previousValueRef = useRef<boolean>(false);

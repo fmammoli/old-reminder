@@ -18,6 +18,18 @@ import {
   QueryClient,
   QueryClientProvider,
 } from "react-query";
+import { ReactQueryDevtools } from "react-query/devtools";
+import TimePicker from "./TimePicker";
+
+const hours = new Array(24).fill(0).map((item, i) => {
+  if (i < 10) return `0${i}`;
+  return i;
+});
+
+const minutes = new Array(60).fill(0).map((item, i) => {
+  if (i < 10) return `0${i}`;
+  return i;
+});
 
 const queryClient = new QueryClient();
 
@@ -45,7 +57,8 @@ export default function NewReminderForm({
       "color-radio": { value: string };
       theme: { value: string };
       ["icon-radio"]: { value: number };
-      shouldTakeAt: { value: Date };
+      shouldTakeAt: { value: string };
+      shhouldTakeAtDate: { value: Date };
       observations: { value: string };
     };
     console.log(form);
@@ -60,7 +73,7 @@ export default function NewReminderForm({
       checked: false,
       icon: iconList[form["icon-radio"].value],
       observations: form.observations.value,
-      //   shouldTakeAt: "00",
+      shouldTakeAtString: form.shouldTakeAt.value,
     };
     console.log(newItem);
   }
@@ -155,6 +168,7 @@ export default function NewReminderForm({
           <div className="flex mb-4 gap-2">
             <QueryClientProvider client={queryClient}>
               <NameSearch value={name} onChange={handleNameChange}></NameSearch>
+              <ReactQueryDevtools initialIsOpen={false} />
             </QueryClientProvider>
             <div className="mt-1 mr-1">
               <input
@@ -223,6 +237,11 @@ export default function NewReminderForm({
 
             <FrequencyInput></FrequencyInput>
           </div>
+
+          <div className="">
+            <TimePicker></TimePicker>
+          </div>
+
           <RepetitionInput date={date}></RepetitionInput>
           <div className="">
             <div className="relative">
