@@ -154,6 +154,10 @@ abbr:where([title]) {
   text-decoration: none;
 }
 
+.react-calendar__navigation {
+  padding-block: 0.5rem;
+}
+
 .react-calendar__navigation > button:disabled {
   background-color: rgb(245 245 245);
 }
@@ -169,6 +173,10 @@ abbr:where([title]) {
   padding-block: 1.25rem;
   transition: background-color 102ms ease-out;
   color: var(--color-text-accent);
+}
+
+.react-calendar__month-view__weekdays {
+  text-align: center;
 }
 
 .react-calendar__month-view__weekdays__weekday {

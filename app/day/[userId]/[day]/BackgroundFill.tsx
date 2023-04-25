@@ -40,7 +40,7 @@ export const FillBackground = memo(FillBackgroundBase);
 export function FillBackgroundBase({
   color = "bg-gray-400",
   children,
-  isVisible,
+  isVisible = false,
   fadeOut = false,
 }: {
   children?: ReactNode;
@@ -74,7 +74,7 @@ export function FillBackgroundBase({
                 initial={"closed"}
                 animate={"open"}
                 exit={"closed"}
-                className={`w-full h-full ${color} transition-colors duration-700`}
+                className={`w-full h-full ${color} transition-colors duration-700 md:rounded-xl`}
                 custom={{ height: dimensions.current.height, color: color }}
               ></motion.div>
             )}

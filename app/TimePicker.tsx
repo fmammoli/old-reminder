@@ -29,7 +29,7 @@ export default function TimePicker({}: {}) {
     .split(":");
   const hour = hours.indexOf(now[0]);
   const minute = minutes.indexOf(now[1]);
-  console.log(hour + ":" + minute);
+  // console.log(hour + ":" + minute);
   const [valueHourIndex, setValueHourIndex] = useState(0);
   const [valueMinuteIndex, setValueMinuteIndex] = useState(0);
 
@@ -65,7 +65,7 @@ export default function TimePicker({}: {}) {
       });
     }
 
-    console.log(valueRef.current);
+    // console.log(valueRef.current);
   }
   return (
     <div>
@@ -95,13 +95,14 @@ export default function TimePicker({}: {}) {
               </div>
             ))}
           </div>
-          <div className="flex justify-center">
+          <div className="flex justify-center items-center">
             <Picker
               name={"hours"}
               data={hours}
               start={valueHourIndex}
               onChange={handleChange}
             ></Picker>
+
             <Picker
               name={"minutes"}
               data={minutes}

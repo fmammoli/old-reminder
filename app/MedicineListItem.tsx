@@ -1,46 +1,49 @@
 import Link from "next/link";
 import Image, { StaticImageData } from "next/image";
-import { MedicineType } from "./day/[id]/page";
+import { ReminderType } from "./Types";
 
 export default function MedicineListItem({
-  id,
   dateString,
   color,
   icon,
   title,
-  concentration,
   amount,
   frequency,
-  shouldTaketAt,
+  shouldTakeAt,
+  userUid,
 }: {
-  id: string;
   dateString: string;
   color: string;
   icon: StaticImageData;
   title: string;
-  concentration: string;
   amount: string;
   frequency: string;
-  shouldTaketAt: string;
+  shouldTakeAt: Date;
+  userUid: string;
 }) {
   return (
-    <li className=" bg-skin-fill border-neutral-200 rounded-lg">
+    <li className=" bg-skin-fill border-neutral-200 rounded-lg hover:bg-slate-200">
       <Link
-        href={`/day/${dateString.split("/").join("-")}`}
+        href={`/day/${userUid}/${dateString.split("/").join("-")}`}
         className="flex gap-4 p-4"
       >
         <div className={`relative h-20 w-20 rounded-full  p-1 ${color}`}>
           <Image src={icon} alt={""}></Image>
         </div>
         <div className="grow">
-          <h3 className={`text-lg text-sky-500 font-sans font-medium`}>
-            {title} <span>, {concentration}</span>
+          <h3
+            className={`text-lg text-sky-500 font-sans font-medium capitalize`}
+          >
+            {title}
           </h3>
           <p className="text-md text-neutral-600 font-light">{`${amount}, ${frequency}`}</p>
           <div className="flex justify-between">
             <div className="flex gap-1 py-1 items-center">
               <p className="text-md text-neutral-600 font-light">
-                {shouldTaketAt}
+                {new Date(shouldTakeAt).toLocaleString("pt-Br", {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                })}
               </p>
               <span className="inline-block ">
                 <svg

@@ -4,13 +4,13 @@ export default function FloatingButton({
   isChecked,
   inputKey,
   onChange,
-  color = "bg-rose-400",
+  color,
   children,
 }: {
-  isChecked: string | string[];
+  isChecked: boolean;
   inputKey: string;
   onChange?: (event: ChangeEvent<HTMLInputElement>) => void;
-  color?: string;
+  color: string;
   children?: ReactNode;
 }) {
   const fittings = {
@@ -18,10 +18,8 @@ export default function FloatingButton({
     cool: "translate-y-[0.50rem]",
   };
 
-  const amIChecked = isChecked.includes(inputKey);
-
   function handleChange(event: React.MouseEvent<HTMLDivElement>) {
-    if (event.detail < 2 && amIChecked) {
+    if (event.detail < 2 && isChecked) {
       event.preventDefault();
       event.stopPropagation();
       console.log("prevented");
@@ -35,7 +33,7 @@ export default function FloatingButton({
       <label htmlFor={inputKey}>
         <div
           className={`${
-            amIChecked
+            isChecked
               ? `${fittings.perfect} duration-[500ms] scale-[0.90] border-none shadow-none`
               : " -translate-y-8 shadow-2xl"
           } focus:translate-y-[0.5rem] w-[146px] h-[146px] flex justify-center items-center  cursor-pointer bg-skin-fill  rounded-full transition-all ease-out duration-200 border border-gray-200  z-10 will-change-[shadow]`}

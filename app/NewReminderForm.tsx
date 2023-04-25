@@ -8,6 +8,9 @@ import { Html5QrcodeScanner } from "html5-qrcode";
 // To use Html5Qrcode (more info below)
 import { Html5Qrcode } from "html5-qrcode";
 import Html5QrcodePlugin from "./HTML5Qrcodeplugin";
+import { getFirestore, collection, addDoc } from "firebase/firestore";
+import { useCollection } from "react-firebase-hooks/firestore";
+import { db } from "../firebase/clientApp";
 
 import NameSearch from "./NameSearch";
 
@@ -20,6 +23,7 @@ import {
 } from "react-query";
 import { ReactQueryDevtools } from "react-query/devtools";
 import TimePicker from "./TimePicker";
+import { ThemeItemType, themeList } from "./ThemeList";
 
 const hours = new Array(24).fill(0).map((item, i) => {
   if (i < 10) return `0${i}`;
@@ -38,11 +42,13 @@ export default function NewReminderForm({
   colorList,
   date,
   onClose,
+  onSubmit,
 }: {
   iconList: StaticImageData[];
-  colorList: string[];
+  colorList: ThemeItemType[];
   date: Date;
   onClose: () => void;
+  onSubmit: (newItem: any) => void;
 }) {
   function handleSubmit(event: React.FormEvent) {
     // Prevent the browser from reloading the page
@@ -54,28 +60,52 @@ export default function NewReminderForm({
       amount: { value: string };
       frequency: { value: string };
       "repetitions-radio": { value: string };
-      "color-radio": { value: string };
+      "theme-radio": { value: string };
       theme: { value: string };
       ["icon-radio"]: { value: number };
       shouldTakeAt: { value: string };
       shhouldTakeAtDate: { value: Date };
       observations: { value: string };
     };
-    console.log(form);
+
+    const hours = form.shouldTakeAt.value.split(":")[0];
+    const minutes = form.shouldTakeAt.value.split(":")[1];
+    const shouldTakeAt = new Date(
+      new Date(date).setHours(parseInt(hours), parseInt(minutes), 0)
+    );
+
+    console.log(shouldTakeAt);
     const newItem = {
-      id: "Aaa",
-      title: form.name.value,
+      title: form.name.value.toLowerCase(),
       amount: form.amount.value,
       frequency: form.frequency.value,
       useUntil: form["repetitions-radio"].value,
-      color: form["color-radio"].value,
-      theme: form["color-radio"].value,
+      color: themeList.find((item) => item.name === form["theme-radio"].value)
+        ?.color,
+      theme: form["theme-radio"].value,
       checked: false,
       icon: iconList[form["icon-radio"].value],
       observations: form.observations.value,
       shouldTakeAtString: form.shouldTakeAt.value,
+      date: date,
+      dateString: date.toLocaleDateString("pt-Br", {
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+      }),
+      monthYearString: date.toLocaleDateString("pt-Br", {
+        month: "2-digit",
+        year: "numeric",
+      }),
+      yearString: date.toLocaleDateString("pt-Br", {
+        year: "numeric",
+      }),
+      shouldTakeAt: shouldTakeAt,
+      createdAt: new Date(),
     };
     console.log(newItem);
+
+    onSubmit(newItem);
   }
 
   const [showScan, setShowScan] = useState(false);
@@ -252,17 +282,17 @@ export default function NewReminderForm({
               >
                 <div className="grid grid-cols-[repeat(auto-fit,minmax(4rem,1fr))] justify-items-center">
                   {colorList.map((item, i) => (
-                    <div key={`color-radio-${i}`} className="py-4">
+                    <div key={`theme-radio-${i}`} className="py-4">
                       <input
-                        id={`color-radio-${i}`}
+                        id={`theme-radio-${i}`}
                         type="radio"
-                        name="color-radio"
+                        name="theme-radio"
                         className="peer hidden"
-                        value={item}
+                        value={item.name}
                       />
                       <label
-                        htmlFor={`color-radio-${i}`}
-                        className={`rounded-lg ${item} block h-10 w-10 peer-checked:ring-4 ring-amber-300`}
+                        htmlFor={`theme-radio-${i}`}
+                        className={`rounded-lg ${item.color} block h-10 w-10 peer-checked:ring-4 ring-amber-300`}
                       ></label>
                     </div>
                   ))}

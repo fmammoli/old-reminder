@@ -1,6 +1,5 @@
 import { ChangeEvent, ReactElement, ReactNode, useState } from "react";
 import FloatingButton from "./FloatingButton";
-import { MedicineType } from "./page";
 
 export const colors = [
   "bg-rose-400",
@@ -19,7 +18,16 @@ export default function ButtonGroup({
   ) => void;
   children: ReactElement[] | ReactElement;
 }) {
-  const [checked, setChecked] = useState<string[]>([]);
+  const [checked, setChecked] = useState<string[]>(() => {
+    if (Array.isArray(children)) {
+      return (
+        children
+          .filter((item) => item.props["data-checked"] === true)
+          .map((item) => `check-${item.props.id}`) || []
+      );
+    }
+    return [];
+  });
 
   function handleChange(event: ChangeEvent<HTMLInputElement>) {
     const index = checked.findIndex((item) => item === event.target.id);
@@ -44,7 +52,9 @@ export default function ButtonGroup({
                 key={`check-${item.props.id}`}
               >
                 <FloatingButton
-                  isChecked={checked}
+                  isChecked={
+                    checked.includes(`check-${item.props.id}`) ? true : false
+                  }
                   inputKey={`check-${item.props.id}`}
                   onChange={handleChange}
                   color={item.props.color}
@@ -57,9 +67,10 @@ export default function ButtonGroup({
         ) : (
           <FloatingButton
             key={`check-s`}
-            isChecked={checked}
+            isChecked={false}
             inputKey={`check-1`}
             onChange={handleChange}
+            color={"bg-white"}
           >
             {children}
           </FloatingButton>

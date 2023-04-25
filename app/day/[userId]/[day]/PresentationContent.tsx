@@ -21,6 +21,7 @@ import FloatingButton from "./FloatingButton";
 import ButtonGroup from "./ButtonGroup";
 import Slider from "./Slider";
 import BackgroundFill from "./BackgroundFill";
+import { ReminderType } from "@/app/Types";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -45,52 +46,11 @@ export type MedicineType = {
   takenAt?: string;
 };
 
-const medicineList: MedicineType[] = [
-  {
-    id: "1",
-    title: "Azitromicina",
-    concentration: "300mg",
-    amount: "1 capsule",
-    frequency: "once a day",
-    color: "bg-rose-400",
-    theme: "theme-one",
-    checked: false,
-    icon: PillIcon,
-    shouldTaketAt: "09:00",
-  },
-  {
-    id: "2",
-    title: "Decongex",
-    concentration: "700mg",
-    amount: "2 capsule",
-    frequency: "once a day",
-    color: "bg-sky-400",
-    theme: "theme-two",
-    checked: false,
-    icon: PillsIcon,
-    shouldTaketAt: "12:00",
-  },
-  {
-    id: "3",
-    title: "Czitromicina",
-    concentration: "700mg",
-    amount: "1 capsule",
-    frequency: "once a day",
-    color: "bg-violet-300",
-    theme: "theme-three",
-    checked: false,
-    icon: BandageIcon,
-    shouldTaketAt: "22:00",
-  },
-];
-
-const data = {
-  id: "1-data",
-  date: new Date(),
-  medicineList: medicineList,
-};
-
-export default function Home() {
+export default function PresentationContent({
+  reminders,
+}: {
+  reminders: ReminderType[];
+}) {
   const [medicines, setMedicines] = useState(medicineList);
   const [theme, setTheme] = useState<string>("theme-one-base");
   const [current, setCurrent] = useState(medicineList[0]);
