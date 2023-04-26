@@ -22,39 +22,35 @@ import MedicineList from "./MedicineList";
 import NewReminderForm from "./NewReminderForm";
 import { OnArgs } from "react-calendar/dist/cjs/shared/types";
 import { auth, db } from "../firebase/clientApp";
-import {
-  signInWithPopup,
-  GoogleAuthProvider,
-  UserCredential,
-} from "firebase/auth";
+import { GoogleAuthProvider, User } from "firebase/auth";
 
 import {
   CollectionReference,
-  addDoc,
   collection,
   doc,
   query,
   setDoc,
   where,
 } from "firebase/firestore";
-import {
-  useCollection,
-  useCollectionData,
-} from "react-firebase-hooks/firestore";
 import { ReminderType } from "./Types";
-
-import { useAuthContext } from "@/contexts/AuthContext";
 import { themeList } from "./ThemeList";
+
+import {
+  useAuthUser,
+  useAuthSignInWithPopup,
+  useAuthSignOut,
+  useAuthSignInAnonymously,
+} from "@react-query-firebase/auth";
+import { UseQueryResult, useQueryClient } from "react-query";
+import {
+  useFirestoreCollectionMutation,
+  useFirestoreDocumentMutation,
+  useFirestoreQueryData,
+} from "@react-query-firebase/firestore";
 
 const inter = Inter({ subsets: ["latin"] });
 
 const now = new Date();
-
-const formatedNow = now.toLocaleDateString("pt-Br", {
-  day: "2-digit",
-  month: "2-digit",
-  year: "numeric",
-});
 
 const iconList = [
   icon,
@@ -69,34 +65,32 @@ const iconList = [
 ];
 
 export default function Home() {
-  const [date, setDate] = useState(now);
+  const queryClient = useQueryClient();
 
-  const dateString = date.toLocaleString("pt-Br", {
-    day: "2-digit",
-    month: "2-digit",
-    year: "numeric",
-  });
+  const [date, setDate] = useState(now);
 
   const [modal, setModal] = useState(false);
   const [isFormOpen, setFormOpen] = useState(false);
 
-  // @ts-ignore
-  const { user } = useAuthContext();
-
-  const currentUser = user;
-
-  useEffect(() => {
-    console.log(user);
-  }, [user]);
+  const user = useAuthUser(["user"], auth);
 
   const collectionRef = collection(
     db,
     "reminders"
   ) as CollectionReference<ReminderType>;
 
-  const monthQuery = query(
+  const anonymousSignInMutation = useAuthSignInAnonymously(auth);
+  useEffect(() => {
+    // if (!user.data) {
+    //   anonymousSignInMutation.mutate();
+    // }
+  }, [user]);
+
+  const userUid = user.data ? user.data.uid : null;
+
+  const queryRef = query(
     collectionRef,
-    where("userUid", "==", user && user.uid),
+    where("userUid", "==", userUid),
     where(
       "monthYearString",
       "==",
@@ -104,7 +98,12 @@ export default function Home() {
     )
   );
 
-  const [monthData, loadingMonth, errorMonth] = useCollectionData(monthQuery);
+  const monthQuery = useFirestoreQueryData(
+    ["reminders", { userUid }],
+    queryRef,
+    { idField: "_id", subscribe: true },
+    { enabled: user.data ? true : false }
+  );
 
   function handleCalendarDayChange(value: Date | null | (Date | null)[]) {
     console.log("changed calendar");
@@ -148,9 +147,10 @@ export default function Home() {
 
     return (
       <div className={`flex justify-center items-center gap-1 pt-3 h-2`}>
-        {monthData &&
-          monthData
-            ?.filter((item, i) => item.dateString === dateKey)
+        {monthQuery &&
+          monthQuery.data &&
+          monthQuery.data
+            .filter((item, i) => item.dateString === dateKey)
             .slice(0, 4)
             .map((item, i) => (
               <div
@@ -163,65 +163,83 @@ export default function Home() {
       </div>
     );
   }
-  const googleAuth = new GoogleAuthProvider();
 
-  const [currentUserState, setCurrentUserState] = useState(user);
+  const signInMutation = useAuthSignInWithPopup(auth, {
+    onSuccess: async (user) => {
+      console.log("user signed in");
+
+      addUser(user.user);
+    },
+  });
+
+  const signOutMutation = useAuthSignOut(auth, {
+    onSuccess: async (res) => {
+      console.log("User Signed out");
+    },
+  });
 
   async function login() {
-    console.log("login in");
-    const result = await signInWithPopup(auth, googleAuth);
-    addUser(result);
-    setCurrentUserState(result.user);
+    signInMutation.mutate({
+      provider: new GoogleAuthProvider(),
+    });
   }
 
   async function logout() {
-    auth.signOut();
-    setCurrentUserState(null);
+    signOutMutation.mutate();
   }
 
-  async function addUser(user: UserCredential) {
+  async function addUser(newUser: User) {
     try {
-      const docRef = await setDoc(doc(db, "users", user.user.uid), {
-        uid: user.user.uid,
-        displayName: user.user.displayName,
-        email: user.user.email,
-        isAnonymous: user.user.isAnonymous,
-        photoUrl: user.user.photoURL,
+      const docRef = doc(db, "users", newUser.uid);
+      const res = await setDoc(docRef, {
+        uid: newUser.uid,
+        displayName: newUser.displayName,
+        email: newUser.email,
+        isAnonymous: newUser.isAnonymous,
+        photoUrl: newUser.photoURL,
       });
-      console.log("Document written with ID: ", docRef);
-      return docRef;
+
+      console.log(`User Added with id: ${newUser.uid}`);
     } catch (e) {
       console.error("Error adding document: ", e);
       return e;
     }
   }
+
+  const remindersRef = collection(db, "reminders");
+  const remindersMutation = useFirestoreCollectionMutation(remindersRef);
 
   async function addReminder(newItem: ReminderType) {
     try {
-      const newDocRef = doc(collection(db, "reminders"));
-      const docRef = await setDoc(newDocRef, {
-        ...newItem,
-        userUid: currentUser?.uid,
-        id: newDocRef.id,
-      });
-      console.log("Document written with ID: ", newDocRef.id);
+      remindersMutation.mutate(
+        {
+          ...newItem,
+          userUid: user.data?.uid || "0",
+        },
+        {
+          onSuccess: async (res) => {
+            console.log(`Reminder added: ${res}`);
+          },
+        }
+      );
       setFormOpen(false);
-      return docRef;
     } catch (e) {
       console.error("Error adding document: ", e);
       return e;
     }
   }
 
-  const dayReminders = monthData?.filter(
-    (item, i) =>
-      (item as ReminderType).dateString ===
-      date.toLocaleDateString("pt-Br", {
-        day: "2-digit",
-        month: "2-digit",
-        year: "numeric",
-      })
-  );
+  const dayReminders =
+    monthQuery &&
+    monthQuery.data?.filter(
+      (item, i) =>
+        (item as ReminderType).dateString ===
+        date.toLocaleDateString("pt-Br", {
+          day: "2-digit",
+          month: "2-digit",
+          year: "numeric",
+        })
+    );
 
   return (
     <main
@@ -241,7 +259,7 @@ export default function Home() {
               className="relative rounded-full shadow-md active:bg-gray-200 flex justify-center items-center "
               data-dropdown-toggle="dropdown"
             >
-              {!currentUser ? (
+              {!user.data ? (
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   fill="none"
@@ -260,7 +278,7 @@ export default function Home() {
                 <div className="relative border-1 border-gray-200 rounded-full">
                   <Image
                     src={
-                      currentUser.photoURL ||
+                      user.data?.photoURL ||
                       "https://ui-avatars.com/api/?size=32"
                     }
                     alt={"Profile picture"}
@@ -281,7 +299,7 @@ export default function Home() {
                 aria-labelledby="dropdownDefaultButton"
                 onClick={() => console.log("ul")}
               >
-                {!currentUser && (
+                {!user.data && (
                   <li>
                     <button
                       onClick={login}
@@ -292,7 +310,7 @@ export default function Home() {
                   </li>
                 )}
 
-                {currentUser && (
+                {user.data && (
                   <li>
                     <button
                       onClick={logout}
@@ -451,7 +469,7 @@ export default function Home() {
                       </div>
 
                       <MedicineList fill={6}>
-                        {loadingMonth && <p>Loading...</p>}
+                        {false && <p>Loading...</p>}
                         {dayReminders &&
                           (dayReminders as ReminderType[]).map((item, i) => (
                             <div key={i}>

@@ -1,6 +1,9 @@
 "use client";
-import { AuthContextProvider } from "@/contexts/AuthContext";
+
 import "./globals.css";
+import { QueryClient, QueryClientProvider } from "react-query";
+
+const queryClient = new QueryClient();
 
 export default function RootLayout({
   children,
@@ -10,7 +13,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <AuthContextProvider>{children}</AuthContextProvider>
+        <QueryClientProvider client={queryClient}>
+          {children}
+        </QueryClientProvider>
       </body>
     </html>
   );

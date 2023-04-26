@@ -1,5 +1,4 @@
-import { useState, useEffect, useRef, ReactNode } from "react";
-import ReactDOM from "react-dom";
+import { useEffect, useRef, ReactNode } from "react";
 import { PanInfo, motion, useAnimation } from "framer-motion";
 
 export function BottomSheet({

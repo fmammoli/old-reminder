@@ -1,26 +1,11 @@
 import Image, { StaticImageData } from "next/image";
 import FrequencyInput from "./FrequencyInput";
 import RepetitionInput from "./RepetitionInput";
-import { FormEvent, useState } from "react";
-// To use Html5QrcodeScanner (more info below)
-import { Html5QrcodeScanner } from "html5-qrcode";
-
-// To use Html5Qrcode (more info below)
-import { Html5Qrcode } from "html5-qrcode";
-import Html5QrcodePlugin from "./HTML5Qrcodeplugin";
-import { getFirestore, collection, addDoc } from "firebase/firestore";
-import { useCollection } from "react-firebase-hooks/firestore";
-import { db } from "../firebase/clientApp";
+import { useState } from "react";
 
 import NameSearch from "./NameSearch";
 
-import {
-  useQuery,
-  useMutation,
-  useQueryClient,
-  QueryClient,
-  QueryClientProvider,
-} from "react-query";
+import { QueryClient, QueryClientProvider } from "react-query";
 import { ReactQueryDevtools } from "react-query/devtools";
 import TimePicker from "./TimePicker";
 import { ThemeItemType, themeList } from "./ThemeList";
@@ -110,22 +95,7 @@ export default function NewReminderForm({
 
   const [showScan, setShowScan] = useState(false);
 
-  const [scanResult, setScanResult] = useState<null | string>(null);
-
   const [name, setName] = useState("");
-
-  function handleScanClick() {
-    setShowScan(!showScan);
-  }
-  function onNewScanResult(decodedText: string) {
-    console.log(decodedText);
-    if (decodedText && decodedText !== "") {
-      console.log("decoded");
-      //   setScanResult(decodedText);
-      setName(decodedText);
-      setShowScan(false);
-    }
-  }
 
   function handleNameChange(event: any) {
     setName(event.currentTarget.value);
@@ -169,70 +139,11 @@ export default function NewReminderForm({
         </div>
 
         <div className="max-h-[calc(60svh)] md:max-h-[80svh] overflow-scroll my-4">
-          <div className="">
-            <div className="relative">
-              <input
-                type="text"
-                id="floating_filled_barCode"
-                className="hidden rounded-t-lg px-2.5 pb-2.5 pt-5 w-full text-sm text-gray-900 bg-gray-50 dark:bg-gray-700 border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
-                placeholder=" "
-                value={scanResult || ""}
-                disabled
-              />
-              <label
-                htmlFor="floating_filled_barCode"
-                className="hidden absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-4 scale-75 top-4 z-10 origin-[0] left-2.5 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-4"
-              >
-                Código de Barras:
-              </label>
-            </div>
-            {showScan && (
-              <Html5QrcodePlugin
-                fps={10}
-                qrbox={250}
-                disableFlip={false}
-                qrCodeSuccessCallback={onNewScanResult}
-              />
-            )}
-          </div>
           <div className="flex mb-4 gap-2">
             <QueryClientProvider client={queryClient}>
               <NameSearch value={name} onChange={handleNameChange}></NameSearch>
               <ReactQueryDevtools initialIsOpen={false} />
             </QueryClientProvider>
-            <div className="mt-1 mr-1">
-              <input
-                id={"scanToggle"}
-                name={"scanToggle"}
-                type="checkbox"
-                className="sr-only peer/scan"
-                onChange={handleScanClick}
-              />
-              <label
-                htmlFor="scanToggle"
-                className="block border-sky-400 border-2 text-skin-accent rounded-xl hover:text-skin-inverted hover:bg-sky-300 hover:scale-110 active:bg-skin-accent-fill peer-checked/scan:bg-skin-accent-fill peer-checked/scan:text-skin-inverted"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  strokeWidth={1.5}
-                  stroke="currentColor"
-                  className="w-12 h-12"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M3.75 4.875c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5A1.125 1.125 0 013.75 9.375v-4.5zM3.75 14.625c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5a1.125 1.125 0 01-1.125-1.125v-4.5zM13.5 4.875c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5A1.125 1.125 0 0113.5 9.375v-4.5z"
-                  />
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M6.75 6.75h.75v.75h-.75v-.75zM6.75 16.5h.75v.75h-.75v-.75zM16.5 6.75h.75v.75h-.75v-.75zM13.5 13.5h.75v.75h-.75v-.75zM13.5 19.5h.75v.75h-.75v-.75zM19.5 13.5h.75v.75h-.75v-.75zM19.5 19.5h.75v.75h-.75v-.75zM16.5 16.5h.75v.75h-.75v-.75z"
-                  />
-                </svg>
-              </label>
-            </div>
           </div>
 
           <div className=" hidden relative z-0 my-4">

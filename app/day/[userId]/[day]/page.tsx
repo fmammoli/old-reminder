@@ -1,5 +1,5 @@
 "use client";
-import Image, { StaticImageData } from "next/image";
+import Image from "next/image";
 import { Inter } from "next/font/google";
 import icon from "/public/images/capsule.png";
 import { ChangeEvent, useEffect, useState } from "react";
@@ -12,14 +12,8 @@ import ButtonGroup from "./ButtonGroup";
 import Slider from "./Slider";
 import BackgroundFill from "./BackgroundFill";
 import { ReminderType } from "@/app/Types";
-import { useAuthState } from "react-firebase-hooks/auth";
 import { auth, db } from "../../../../firebase/clientApp";
-import { useAuthContext } from "@/contexts/AuthContext";
-import { UserCredential } from "firebase/auth";
-import {
-  useCollection,
-  useCollectionData,
-} from "react-firebase-hooks/firestore";
+
 import {
   CollectionReference,
   Timestamp,
@@ -29,58 +23,43 @@ import {
   updateDoc,
   where,
 } from "firebase/firestore";
-import { data } from "autoprefixer";
+import { useAuthUser } from "@react-query-firebase/auth";
+import {
+  useFirestoreCollectionMutation,
+  useFirestoreDocumentMutation,
+  useFirestoreQueryData,
+} from "@react-query-firebase/firestore";
+import { themeList } from "@/app/ThemeList";
+import Gallery from "./Gallery";
+import FloatingButton from "./FloatingButton";
+import { useQueryClient } from "react-query";
 
-import { ThemeItemType, themeList } from "@/app/ThemeList";
 const inter = Inter({ subsets: ["latin"] });
-
-const themes = [
-  ["theme-one-base", "theme-one-active"],
-  ["theme-two-base", "theme-two-active"],
-  ["theme-three-base", "theme-three-active"],
-  ["theme-four-base", "theme-four-active"],
-];
 
 export default function Page({
   params: { userId, day },
+  searchParams: { start },
 }: {
   params: { userId: string; day: string };
+  searchParams: { start: string };
 }) {
   const date = new Date(
     Date.parse(`${[...day.split("-")].reverse().join("-")}T00:00:00.000-03:00`)
   );
-  // @ts-ignore
-  const { user } = useAuthContext();
+  const queryClient = useQueryClient();
 
-  const placeholderReminder: ReminderType = {
-    id: "",
-    amount: "",
-    userUid: "",
-    shouldTakeAtString: "00:00",
-    theme: "",
-    frequency: "",
-    dateString: "",
-    color: "",
-    date: Timestamp.fromDate(date),
-    shouldTakeAt: Timestamp.fromDate(new Date()),
-    title: "My Medicine",
-    monthYearString: "",
-    yearString: "",
-    observations: "",
-    checked: false,
-    icon: icon,
-    createdAt: Timestamp.fromDate(new Date()),
-    useUntil: "",
-  };
+  const user = useAuthUser(["user"], auth);
+
+  const userUid = user.data ? user.data.uid : null;
 
   const collectionRef = collection(
     db,
     "reminders"
   ) as CollectionReference<ReminderType>;
 
-  const dayQuery = query(
+  const dayQueryRef = query(
     collectionRef,
-    where("userUid", "==", user && user.uid),
+    where("userUid", "==", userUid),
     where(
       "dateString",
       "==",
@@ -92,25 +71,143 @@ export default function Page({
     )
   );
 
-  const [dayData, loadingDay, errorDay] = useCollectionData(dayQuery);
+  const dayQueryRes = useFirestoreQueryData(
+    ["reminders", { userUid }, { day }],
+    dayQueryRef,
+    { idField: "_id", subscribe: true },
+    { enabled: user.data ? true : false }
+  );
+  const monthQueryRef = query(
+    collectionRef,
+    where("userUid", "==", userUid),
+    where(
+      "monthYearString",
+      "==",
+      date.toLocaleDateString("pt-Br", { month: "2-digit", year: "numeric" })
+    )
+  );
 
-  const [current, setCurrent] = useState<ReminderType | null>(null);
+  const monthQuery = useFirestoreQueryData(
+    ["reminders", { userUid }],
+    monthQueryRef,
+    { idField: "_id", subscribe: true },
+    { enabled: user.data ? true : false }
+  );
+
+  function filterDay(data: ReminderType[], day: Date) {
+    return (dayData = data.filter(
+      (item) =>
+        item.dateString ===
+        date.toLocaleDateString("pt-Br", {
+          day: "2-digit",
+          month: "2-digit",
+          year: "numeric",
+        })
+    ));
+  }
+
+  let dayData: ReminderType[] | null = null;
+  if (!monthQuery.isLoading && monthQuery.data) {
+    dayData = filterDay(monthQuery.data, date);
+  }
+
+  const [dayQuery, setDayQuery] = useState(dayQueryRes.data);
+
+  let found: ReminderType | null = null;
+  if (!monthQuery.isLoading && monthQuery.data) {
+    found = monthQuery.data.find((item) => item._id === start) || null;
+  }
+
+  const [current, setCurrent] = useState<ReminderType | null>(found);
+
+  const docRef = doc(collectionRef, current?._id ? current._id : start);
+
+  const remindersMutation = useFirestoreDocumentMutation(
+    docRef,
+    {
+      merge: true,
+    },
+    {
+      onMutate: async (newReminder) => {
+        // Cancel any outgoing refetches
+        // (so they don't overwrite our optimistic update)
+        await queryClient.cancelQueries({
+          queryKey: ["reminders", { userUid }, { day }],
+        });
+
+        // Snapshot the previous value
+        const previousDay = queryClient.getQueryData<ReminderType[]>([
+          "reminders",
+          { userUid },
+          { day },
+        ]);
+
+        let newDay = null;
+        if (previousDay) {
+          newDay = previousDay.map((item, index) => {
+            if (item._id === newReminder._id) {
+              return { ...newReminder };
+            } else {
+              return item;
+            }
+          });
+        } else {
+          newDay = [newReminder];
+        }
+
+        // Optimistically update to the new value
+        queryClient.setQueryData(["reminders", { userUid }, { day }], newDay);
+        setCurrent(newReminder as ReminderType);
+        setDayQuery(newDay as ReminderType[]);
+        // setDayQuery(newDay as ReminderType[]);
+        // Return a context with the previous and new todo
+        return { previousDay, newDay };
+      },
+      // If the mutation fails, use the context we returned above
+      onError: (err, newDay, context) => {
+        queryClient.setQueryData<ReminderType[]>(
+          ["reminders", { userUid }, { day }],
+          //@ts-ignore
+          context.previousDay
+        );
+        //@ts-ignore
+        setDayQuery(context.previousDay as ReminderType[]);
+      },
+      // Always refetch after error or success:
+      onSettled: (newTodo) => {
+        queryClient.invalidateQueries({
+          queryKey: ["reminders", { userUid }, { day }],
+        });
+      },
+    }
+  );
+
+  useEffect(() => {
+    if (!dayQuery && monthQuery.status === "success") {
+      setDayQuery(filterDay(monthQuery.data, date));
+    }
+  }, [monthQuery, dayQuery, start, date, setDayQuery, filterDay]);
+
+  useEffect(() => {
+    if (!current && monthQuery.status === "success") {
+      found = monthQuery.data.find((item) => item._id === start) || null;
+      if (found) {
+        setCurrent(found);
+      }
+    }
+  }, [monthQuery, current, setCurrent]);
 
   async function updateReminder(toUpdate: ReminderType, fields: {}) {
-    setCurrent({ ...toUpdate, ...fields });
-    const docRef = doc(db, "reminders", toUpdate.id);
-    const result = await updateDoc(docRef, fields);
-    setCurrent({ ...toUpdate, ...fields });
-    console.log(result);
+    remindersMutation.mutate({ ...toUpdate, ...fields });
   }
 
   function handleButtonClick(
-    event: ChangeEvent<HTMLInputElement>,
-    newChecked: string[]
+    reminderId: string,
+    event: ChangeEvent<HTMLInputElement>
   ) {
     if (current) {
       const takenAt = new Date();
-
+      console.log(current);
       updateReminder(current, {
         checked: !current.checked,
         takenAt: !current.checked ? Timestamp.fromDate(takenAt) : null,
@@ -118,21 +215,17 @@ export default function Page({
     }
   }
 
-  useEffect(() => {
-    if (loadingDay === false && dayData && !current) {
-      console.log("starting current");
-      setCurrent(dayData[0]);
-    }
-  }, [loadingDay, dayData, setCurrent, current]);
-
-  function handleSlideChange(current: number, direction: "+1" | "-1") {
-    if (dayData) {
-      setCurrent(dayData[current]);
+  function handleSlideChange(reminderId: string, direction: number) {
+    if (dayQuery) {
+      const found = dayQuery.find((item) => item._id === reminderId);
+      if (found) {
+        setCurrent(found);
+      }
     }
   }
 
   let takenAtString: string | undefined = "";
-  if (dayData && current) {
+  if (dayQuery && current) {
     if (current.checked && current.takenAt) {
       takenAtString = new Date(current.takenAt.toDate()).toLocaleString(
         "pt-Br",
@@ -147,8 +240,12 @@ export default function Page({
   }
 
   let theme = "theme-one";
+
   if (current) {
-    theme = `${current.theme}-${current.checked ? "active" : "base"}`;
+    const found = themeList.find((item) => item.name === current.theme);
+    if (found) {
+      theme = current.checked ? found?.active : found?.base;
+    }
   }
 
   return (
@@ -179,22 +276,28 @@ export default function Page({
           )}
 
           <div className="" id="crouselContainer relative">
-            {current && dayData && (
-              <Slider data={dayData} onSlideChange={handleSlideChange}>
-                <ButtonGroup onChange={handleButtonClick}>
-                  {dayData.map((item) => (
-                    <div
-                      id={item.id}
+            {current && dayQuery && (
+              <Gallery onChange={handleSlideChange} current={current}>
+                {dayQuery.map((item, index) => {
+                  return (
+                    <FloatingButton
+                      key={item._id}
+                      reminderId={item._id}
+                      isChecked={item.checked}
                       color={item.color}
-                      key={`img-check-${item.id}`}
-                      className="relative"
-                      data-checked={item.checked}
+                      onChange={handleButtonClick}
                     >
-                      <Image src={item.icon} alt=""></Image>
-                    </div>
-                  ))}
-                </ButtonGroup>
-              </Slider>
+                      <div
+                        key={`img-check-${item._id}`}
+                        className="relative"
+                        data-checked={item.checked}
+                      >
+                        <Image src={item.icon} alt=""></Image>
+                      </div>
+                    </FloatingButton>
+                  );
+                })}
+              </Gallery>
             )}
           </div>
 

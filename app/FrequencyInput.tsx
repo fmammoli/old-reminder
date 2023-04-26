@@ -1,4 +1,4 @@
-import { useState, ReactNode, useRef, ChangeEvent } from "react";
+import { useState, ReactNode, ChangeEvent } from "react";
 
 const frequencies = [
   "1 vez ao dia.",

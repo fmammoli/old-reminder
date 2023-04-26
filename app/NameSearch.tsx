@@ -1,18 +1,11 @@
-import {
-  ChangeEventHandler,
-  FormEvent,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import { ChangeEventHandler, useRef, useState } from "react";
 import {
   QueryClient,
   QueryClientProvider,
   useQuery,
   useQueryClient,
 } from "react-query";
-import { useDebounce } from "use-debounce";
-import Downshift, { useCombobox } from "downshift";
+import { useCombobox } from "downshift";
 import { ViewportList } from "react-viewport-list";
 
 async function fetchSearchData() {
@@ -40,8 +33,6 @@ export default function NameSearch({
   // const fuse = new Fuse(data, { keys: ["value"] });
 
   const [text, setText] = useState("");
-
-  const [debouncedValue] = useDebounce(text, 200);
 
   function getDataFilter(inputValue: string) {
     const lowerCasedInputValue = inputValue.toLowerCase();

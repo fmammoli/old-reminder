@@ -4,7 +4,10 @@ const nextConfig = {
     appDir: true,
   },
   images: {
-    remotePatterns: [{ hostname: "lh3.googleusercontent.com" }],
+    remotePatterns: [
+      { hostname: "lh3.googleusercontent.com" },
+      { hostname: "ui-avatars.com" },
+    ],
   },
 };
 

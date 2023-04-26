@@ -2,7 +2,7 @@ import { Timestamp } from "firebase/firestore";
 import { StaticImageData } from "next/image";
 
 export type ReminderType = {
-  id: string;
+  _id: string;
   amount: string;
   userUid: string;
   shouldTakeAtString: string;

@@ -1,11 +1,5 @@
-import {
-  PanInfo,
-  motion,
-  useAnimate,
-  useMotionValue,
-  useScroll,
-} from "framer-motion";
-import { ReactElement, ReactNode, useEffect, useRef, useState } from "react";
+import { motion, useAnimate } from "framer-motion";
+import { ReactNode, useEffect, useRef, useState } from "react";
 import { InView } from "react-intersection-observer";
 
 const ITEM_HEIGHT = 28;

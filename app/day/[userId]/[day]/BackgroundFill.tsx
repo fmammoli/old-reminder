@@ -1,5 +1,5 @@
 import { AnimatePresence, motion } from "framer-motion";
-import { ReactNode, memo, useEffect, useRef } from "react";
+import { ReactNode, memo, useRef } from "react";
 
 const fill = {
   open: ({ height = 1000 }) => {

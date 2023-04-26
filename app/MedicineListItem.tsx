@@ -1,6 +1,5 @@
 import Link from "next/link";
 import Image, { StaticImageData } from "next/image";
-import { ReminderType } from "./Types";
 
 export default function MedicineListItem({
   dateString,
@@ -11,7 +10,9 @@ export default function MedicineListItem({
   frequency,
   shouldTakeAt,
   userUid,
+  _id,
 }: {
+  _id: string;
   dateString: string;
   color: string;
   icon: StaticImageData;
@@ -24,7 +25,7 @@ export default function MedicineListItem({
   return (
     <li className=" bg-skin-fill border-neutral-200 rounded-lg hover:bg-slate-200">
       <Link
-        href={`/day/${userUid}/${dateString.split("/").join("-")}`}
+        href={`/day/${userUid}/${dateString.split("/").join("-")}?start=${_id}`}
         className="flex gap-4 p-4"
       >
         <div className={`relative h-20 w-20 rounded-full  p-1 ${color}`}>

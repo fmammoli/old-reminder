@@ -1,5 +1,5 @@
 import { PanInfo, motion, useAnimate, useMotionValue } from "framer-motion";
-import { ReactElement, ReactNode, useEffect, useRef, useState } from "react";
+import { ReactNode, useEffect, useRef, useState } from "react";
 
 export default function Slider({
   data,
