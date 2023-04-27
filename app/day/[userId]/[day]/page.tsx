@@ -2,14 +2,12 @@
 import Image from "next/image";
 import { Inter } from "next/font/google";
 import icon from "/public/images/capsule.png";
-import { ChangeEvent, useEffect, useState } from "react";
+import { ChangeEvent, useEffect, useMemo, useState } from "react";
 import Menu from "./Menu";
 import Title from "./Title";
 import ScheduledTime from "./ScheduledTime";
 import Description from "./Description";
 import Hole from "./Hole";
-import ButtonGroup from "./ButtonGroup";
-import Slider from "./Slider";
 import BackgroundFill from "./BackgroundFill";
 import { ReminderType } from "@/app/Types";
 import { auth, db } from "../../../../firebase/clientApp";
@@ -36,6 +34,18 @@ import { useQueryClient } from "react-query";
 
 const inter = Inter({ subsets: ["latin"] });
 
+function filterDay(data: ReminderType[], day: Date) {
+  return data.filter(
+    (item) =>
+      item.dateString ===
+      day.toLocaleDateString("pt-Br", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+      })
+  );
+}
+
 export default function Page({
   params: { userId, day },
   searchParams: { start },
@@ -43,8 +53,14 @@ export default function Page({
   params: { userId: string; day: string };
   searchParams: { start: string };
 }) {
-  const date = new Date(
-    Date.parse(`${[...day.split("-")].reverse().join("-")}T00:00:00.000-03:00`)
+  const date = useMemo(
+    () =>
+      new Date(
+        Date.parse(
+          `${[...day.split("-")].reverse().join("-")}T00:00:00.000-03:00`
+        )
+      ),
+    [day]
   );
   const queryClient = useQueryClient();
 
@@ -93,18 +109,6 @@ export default function Page({
     { idField: "_id", subscribe: true },
     { enabled: user.data ? true : false }
   );
-
-  function filterDay(data: ReminderType[], day: Date) {
-    return (dayData = data.filter(
-      (item) =>
-        item.dateString ===
-        date.toLocaleDateString("pt-Br", {
-          day: "2-digit",
-          month: "2-digit",
-          year: "numeric",
-        })
-    ));
-  }
 
   let dayData: ReminderType[] | null = null;
   if (!monthQuery.isLoading && monthQuery.data) {
@@ -186,16 +190,16 @@ export default function Page({
     if (!dayQuery && monthQuery.status === "success") {
       setDayQuery(filterDay(monthQuery.data, date));
     }
-  }, [monthQuery, dayQuery, start, date, setDayQuery, filterDay]);
+  }, [monthQuery, dayQuery, setDayQuery, date]);
 
   useEffect(() => {
     if (!current && monthQuery.status === "success") {
-      found = monthQuery.data.find((item) => item._id === start) || null;
+      const found = monthQuery.data.find((item) => item._id === start) || null;
       if (found) {
         setCurrent(found);
       }
     }
-  }, [monthQuery, current, setCurrent]);
+  }, [monthQuery, current, setCurrent, start]);
 
   async function updateReminder(toUpdate: ReminderType, fields: {}) {
     remindersMutation.mutate({ ...toUpdate, ...fields });
