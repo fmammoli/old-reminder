@@ -93,8 +93,6 @@ export default function NewReminderForm({
     onSubmit(newItem);
   }
 
-  const [showScan, setShowScan] = useState(false);
-
   const [name, setName] = useState("");
 
   function handleNameChange(event: any) {
@@ -103,11 +101,7 @@ export default function NewReminderForm({
 
   return (
     <div className=" ">
-      <form
-        action=""
-        onSubmit={handleSubmit}
-        className="py-4 bg-skin-fill px-4"
-      >
+      <form action="" onSubmit={handleSubmit} className="bg-skin-fill px-4">
         <div className="flex justify-between items-center">
           <h2 className={`text-lg ${"text-skin-accent"} capitalize`}>
             {date.toLocaleDateString("pt-Br", {
