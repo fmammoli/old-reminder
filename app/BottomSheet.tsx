@@ -25,7 +25,6 @@ export function BottomSheet({
   children?: ReactNode;
   popUpDistance?: "top" | "middle";
 }) {
-  const prevIsOpen = usePrevious(isOpen);
   const controls = useAnimation();
 
   function onDragEnd(event: MouseEvent, info: PanInfo) {
@@ -37,46 +36,38 @@ export function BottomSheet({
       controls.start("hidden");
     }
 
-    // const shouldClose =
-    //   info.velocity.y > 20 || (info.velocity.y >= 0 && info.point.y > 10);
-    // if (shouldClose) {
-    //   controls.start("hidden");
-    //   onClose();
+    // if (swipe !== 0) {
+    //   if (swipe < -swipeConfidenceThreshold) {
+    //     controls.start("visible");
+    //   } else if (swipe > swipeConfidenceThreshold) {
+    //     controls.start("hidden");
+    //   }
     // } else {
-    //   controls.start("visible");
-    //   onOpen();
+    //   if (info.offset.y < 0) {
+    //     controls.start("visible");
+    //   }
+    //   if (info.offset.y > 0) {
+    //     controls.start("hidden");
+    //   }
     // }
   }
-
-  // useEffect(() => {
-  //   if (prevIsOpen && !isOpen) {
-  //     controls.start("hidden");
-  //   } else if (!prevIsOpen && isOpen) {
-  //     controls.start("visible");
-  //   }
-  // }, [controls, isOpen, prevIsOpen]);
-
   const containerRef = useRef<null | HTMLDivElement>(null);
   const [constrains, setConstrains] = useState([0, 0]);
 
   useEffect(() => {
-    if (containerRef.current) {
-      if (containerRef.current.offsetParent) {
-        const diff =
-          (containerRef.current.offsetParent as HTMLElement).offsetHeight -
-          containerRef.current.offsetTop;
-        const heigth =
-          (containerRef.current.offsetParent as HTMLElement).offsetHeight -
-          diff -
-          64;
-        console.log(heigth);
-        setConstrains([heigth, 0]);
+    const container = containerRef.current;
+    if (container) {
+      const parent = container.offsetParent as HTMLElement;
+      if (parent) {
+        const diff = parent.offsetHeight - container.offsetTop;
+        const height = parent.offsetHeight - diff - 64;
+        setConstrains([height, 0]);
       }
     }
-  }, [isOpen]);
+  }, [isOpen, containerRef]);
 
   return (
-    <div className="w-full " ref={containerRef}>
+    <div className="w-full" ref={containerRef}>
       <motion.div
         drag="y"
         dragConstraints={{ top: -constrains[0], bottom: 0 }}
@@ -85,20 +76,19 @@ export function BottomSheet({
         animate={controls}
         transition={{
           type: "spring",
-          damping: 40,
-          stiffness: 400,
+          damping: 30,
+          stiffness: 600,
         }}
         variants={{
-          visible: (height) => {
+          visible: () => {
             return {
               y: -constrains[0],
             };
           },
-          hidden: (height) => {
+          hidden: () => {
             return { y: 0 };
           },
         }}
-        custom={containerRef.current?.offsetHeight}
         dragElastic={0.2}
         className="absolute w-full rounded-t-lg transition-colors h-screen"
       >

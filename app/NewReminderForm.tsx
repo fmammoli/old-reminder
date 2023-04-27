@@ -59,7 +59,6 @@ export default function NewReminderForm({
       new Date(date).setHours(parseInt(hours), parseInt(minutes), 0)
     );
 
-    console.log(shouldTakeAt);
     const newItem = {
       title: form.name.value.toLowerCase(),
       amount: form.amount.value,
@@ -88,7 +87,6 @@ export default function NewReminderForm({
       shouldTakeAt: shouldTakeAt,
       createdAt: new Date(),
     };
-    console.log(newItem);
 
     onSubmit(newItem);
   }

@@ -56,7 +56,7 @@ export function FillBackgroundBase({
       <motion.div
         ref={containerRef}
         id="fillBackgroundContainer"
-        className={`absolute w-full h-full top-0 left-0`}
+        className={`absolute w-full h-full top-0 left-0 isolate`}
         custom={dimensions.current.height}
       >
         {false ? (
@@ -78,6 +78,7 @@ export function FillBackgroundBase({
                 custom={{ height: dimensions.current.height, color: color }}
               ></motion.div>
             )}
+            {children}
           </AnimatePresence>
         )}
       </motion.div>

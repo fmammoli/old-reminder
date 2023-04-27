@@ -16,7 +16,6 @@ import Calendar from "react-calendar";
 
 import { BottomSheet } from "./BottomSheet";
 
-import Overlay from "./Overlay";
 import MedicineListItem from "./MedicineListItem";
 import MedicineList from "./MedicineList";
 import NewReminderForm from "./NewReminderForm";
@@ -39,15 +38,16 @@ import {
   useAuthUser,
   useAuthSignInWithPopup,
   useAuthSignOut,
-  useAuthSignInAnonymously,
 } from "@react-query-firebase/auth";
-import { UseQueryResult, useQueryClient } from "react-query";
+import { useQueryClient } from "react-query";
 import {
   useFirestoreCollectionMutation,
-  useFirestoreDocumentMutation,
   useFirestoreQueryData,
+  useFirestoreDocumentDeletion,
 } from "@react-query-firebase/firestore";
 import NavBar from "./NavBar";
+import CalendarPrevButton from "./CalendarPrevButton";
+import CalendarNextButton from "./CalendarNextButton";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -74,13 +74,12 @@ export default function Home() {
   const [isFormOpen, setFormOpen] = useState(false);
 
   const user = useAuthUser(["user"], auth);
+  const userUid = user.data ? user.data.uid : null;
 
   const collectionRef = collection(
     db,
     "reminders"
   ) as CollectionReference<ReminderType>;
-
-  const userUid = user.data ? user.data.uid : null;
 
   const queryRef = query(
     collectionRef,
@@ -233,6 +232,10 @@ export default function Home() {
         })
     );
 
+  const docRef = doc(collectionRef, "456");
+  const deletionMutation = useFirestoreDocumentDeletion(docRef);
+  function handleDelete(_id: string) {}
+
   return (
     <main
       className={
@@ -262,47 +265,12 @@ export default function Home() {
             onClickDay={handleCalendarDayChange}
             onActiveStartDateChange={handleCalendarMonthChange}
             tileContent={tileContentIndicators}
-            prevLabel={
-              <div className=" text-gray-400 px-5 py-2 active:bg-gray-200 active:text-gray-300">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  strokeWidth={1.5}
-                  stroke="currentColor"
-                  className="w-6 h-6"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M15.75 19.5L8.25 12l7.5-7.5"
-                  />
-                </svg>
-              </div>
-            }
-            nextLabel={
-              <div className=" text-gray-400 px-5 py-2 active:bg-gray-200  active:text-gray-300">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  strokeWidth={1.5}
-                  stroke="currentColor"
-                  className="w-6 h-6"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M8.25 4.5l7.5 7.5-7.5 7.5"
-                  />
-                </svg>
-              </div>
-            }
+            prevLabel={<CalendarPrevButton></CalendarPrevButton>}
+            nextLabel={<CalendarNextButton></CalendarNextButton>}
           ></Calendar>
         </section>
 
         <section className="bg-skin-fill mt-1 oveflow-[initial] ">
-          {/* <Overlay isVisible={modal} onClose={() => setModal(false)}></Overlay> */}
           <div className="">
             <BottomSheet
               isOpen={modal}
@@ -378,6 +346,8 @@ export default function Home() {
                               <MedicineListItem
                                 {...item}
                                 shouldTakeAt={item.shouldTakeAt.toDate()}
+                                takenAt={item.takenAt?.toDate()}
+                                onDelete={handleDelete}
                               ></MedicineListItem>
                             </div>
                           ))}
