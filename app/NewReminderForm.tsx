@@ -101,7 +101,12 @@ export default function NewReminderForm({
 
   return (
     <div className=" ">
-      <form action="" onSubmit={handleSubmit} className="bg-skin-fill px-4">
+      <form
+        action=""
+        onSubmit={handleSubmit}
+        className="bg-skin-fill px-4"
+        onPointerDownCapture={(e) => e.stopPropagation()}
+      >
         <div className="flex justify-between items-center">
           <h2 className={`text-lg ${"text-skin-accent"} capitalize`}>
             {date.toLocaleDateString("pt-Br", {
