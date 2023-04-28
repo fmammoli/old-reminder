@@ -81,9 +81,14 @@ export function BottomSheet({
               "draggableBottomSheet"
             )
           ) {
-            //@ts-ignore
-            control.componentControls.forEach((entry) => entry.stop(e, info));
-            console.log(control);
+            if (
+              //@ts-ignore
+              !e.target?.classList.contains("draggableBar")
+            ) {
+              //@ts-ignore
+              control.componentControls.forEach((entry) => entry.stop(e, info));
+              console.log(control);
+            }
           }
           // console.log(e.target);
           // console.log(control);

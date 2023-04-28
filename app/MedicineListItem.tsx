@@ -1,6 +1,11 @@
 import Image, { StaticImageData } from "next/image";
 import { Point, motion, useAnimation } from "framer-motion";
-import { CollectionReference, collection, doc } from "firebase/firestore";
+import {
+  CollectionReference,
+  Timestamp,
+  collection,
+  doc,
+} from "firebase/firestore";
 import {
   useFirestoreDocumentDeletion,
   useFirestoreDocumentMutation,
@@ -49,7 +54,9 @@ export default function MedicineListItem({
   _id,
   checked = false,
   takenAt,
+  date,
   onDelete,
+  onUpdate,
 }: {
   _id: string;
   dateString: string;
@@ -62,7 +69,9 @@ export default function MedicineListItem({
   userUid: string;
   checked?: boolean | null;
   takenAt?: Date | null;
+  date: Timestamp;
   onDelete: (_id: string) => void;
+  onUpdate: (newList: ReminderType[]) => void;
 }) {
   const controls = useAnimation();
 
@@ -116,7 +125,14 @@ export default function MedicineListItem({
         // Cancel any outgoing refetches
         // (so they don't overwrite our optimistic update)
         await queryClient.cancelQueries({
-          queryKey: ["reminders", { userUid }],
+          queryKey: [
+            "reminders",
+            { userUid },
+            date.toDate().toLocaleDateString("pt-Br", {
+              month: "2-digit",
+              year: "numeric",
+            }),
+          ],
         });
 
         // Snapshot the previous value
@@ -126,20 +142,35 @@ export default function MedicineListItem({
         ]);
 
         let newList = null;
+
         if (previousList) {
           newList = previousList.map((item, index) => {
             console.log(newReminder);
             if (item._id === newReminder._id) {
-              return { ...item, ...newReminder };
+              return {
+                ...item,
+                ...newReminder,
+              };
             } else {
               return item;
             }
           });
         }
+        console.log(previousList);
         console.log(newList);
 
         // Optimistically update to the new value
-        queryClient.setQueryData(["reminders", { userUid }], newList);
+        queryClient.setQueryData(
+          [
+            "reminders",
+            { userUid },
+            date.toDate().toLocaleDateString("pt-Br", {
+              month: "2-digit",
+              year: "numeric",
+            }),
+          ],
+          newList
+        );
 
         // setDayQuery(newDay as ReminderType[]);
         // Return a context with the previous and new todo
@@ -149,24 +180,45 @@ export default function MedicineListItem({
       },
       // If the mutation fails, use the context we returned above
       onError: (err, newDay, context) => {
+        console.log("eror");
         queryClient.setQueryData<ReminderType[]>(
-          ["reminders", { userUid }],
+          [
+            "reminders",
+            { userUid },
+            date.toDate().toLocaleDateString("pt-Br", {
+              month: "2-digit",
+              year: "numeric",
+            }),
+          ],
           //@ts-ignore
           context.previousList
         );
       },
       // Always refetch after error or success:
       onSettled: (newList) => {
+        console.log("settled");
         queryClient.invalidateQueries({
-          queryKey: ["reminders", { userUid }],
+          queryKey: [
+            "reminders",
+            { userUid },
+            date.toDate().toLocaleDateString("pt-Br", {
+              month: "2-digit",
+              year: "numeric",
+            }),
+          ],
         });
+        // setCentered(true);
       },
     }
   );
 
   function handleCheckClick() {
     //@ts-ignore
-    remindersMutation.mutate({ _id: _id, checked: !checked });
+    remindersMutation.mutate({
+      _id: _id,
+      checked: !checked,
+      takenAt: Timestamp.fromDate(new Date()),
+    });
   }
 
   const [dragging, setDragging] = useState(false);
@@ -212,8 +264,10 @@ export default function MedicineListItem({
             </svg>
           </button>
         </div>
+
         <div className="bg-green-400 flex items-center sticky grow justify-end rounded-r-lg px-2">
           <button
+            disabled={checked ? true : false}
             className=" px-4 p-8  hover:bg-[#ffffff20] active:bg-[#ffffff50] rounded-md"
             onClick={handleCheckClick}
           >

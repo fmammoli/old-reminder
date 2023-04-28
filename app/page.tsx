@@ -11,7 +11,7 @@ import PillsIcon2 from "/public/images/icons8-pills-64.png";
 import PillsIcon4 from "/public/images/icons8-pills-68.png";
 import PillsIcon5 from "/public/images/icons8-pills-68 (1).png";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Calendar from "react-calendar";
 
 import { BottomSheet } from "./BottomSheet";
@@ -25,6 +25,7 @@ import { GoogleAuthProvider, User } from "firebase/auth";
 
 import {
   CollectionReference,
+  FirestoreError,
   collection,
   doc,
   query,
@@ -39,7 +40,7 @@ import {
   useAuthSignInWithPopup,
   useAuthSignOut,
 } from "@react-query-firebase/auth";
-import { useQueryClient } from "react-query";
+import { UseQueryResult, useQueryClient } from "react-query";
 import {
   useFirestoreCollectionMutation,
   useFirestoreQueryData,
@@ -92,11 +93,22 @@ export default function Home() {
   );
 
   const monthQuery = useFirestoreQueryData(
-    ["reminders", { userUid }],
+    [
+      "reminders",
+      { userUid },
+      date.toLocaleDateString("pt-Br", { month: "2-digit", year: "numeric" }),
+    ],
     queryRef,
     { idField: "_id", subscribe: true },
     { enabled: user.data ? true : false }
   );
+
+  // const [monthQuery, setMonthQuery] = useState<UseQueryResult<
+  //   (ReminderType & {
+  //     _id: string;
+  //   })[],
+  //   FirestoreError
+  // > | null>(monthQueryRes);
 
   function handleCalendarDayChange(value: Date | null | (Date | null)[]) {
     console.log("changed calendar");
@@ -105,6 +117,10 @@ export default function Home() {
       setModal(!modal);
     }
   }
+
+  useEffect(() => {
+    console.log(monthQuery);
+  }, [monthQuery]);
 
   function handleCalendarMonthChange({
     action,
@@ -232,9 +248,9 @@ export default function Home() {
         })
     );
 
-  const docRef = doc(collectionRef, "456");
-  const deletionMutation = useFirestoreDocumentDeletion(docRef);
   function handleDelete(_id: string) {}
+
+  function handleUpdate() {}
 
   return (
     <main
@@ -290,7 +306,7 @@ export default function Home() {
                   className="cursor-grab active:cursor-grabbing py-4 "
                   onClick={handleBottomSheetDoubleClick}
                 >
-                  <div className="max-w-md mx-auto w-1/2 h-2 bg-neutral-200 rounded-full mt-4 hover:bg-neutral-300"></div>
+                  <div className="draggableBar max-w-md mx-auto w-1/2 h-2 bg-neutral-200 rounded-full mt-4 hover:bg-neutral-300"></div>
                 </div>
 
                 <div className="">
@@ -348,6 +364,7 @@ export default function Home() {
                                   shouldTakeAt={item.shouldTakeAt.toDate()}
                                   takenAt={item.takenAt?.toDate()}
                                   onDelete={handleDelete}
+                                  onUpdate={handleUpdate}
                                 ></MedicineListItem>
                               </div>
                             ))}
