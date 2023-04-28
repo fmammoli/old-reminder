@@ -1,5 +1,5 @@
 import { useEffect, useRef, ReactNode, useState } from "react";
-import { PanInfo, motion, useAnimation } from "framer-motion";
+import { PanInfo, motion, useAnimation, useDragControls } from "framer-motion";
 
 /**
  * Experimenting with distilling swipe offset and velocity into a single variable, so the
@@ -66,11 +66,28 @@ export function BottomSheet({
     }
   }, [isOpen, containerRef]);
 
+  const control = useDragControls();
   return (
     <div className="w-full" ref={containerRef}>
       <motion.div
+        id="draggableBottomSheet"
         drag="y"
+        dragControls={control}
         dragConstraints={{ top: -constrains[0], bottom: 0 }}
+        onDragStart={(e, info) => {
+          if (
+            //@ts-ignore
+            !e.target?.parentElement?.parentElement.classList.contains(
+              "draggableBottomSheet"
+            )
+          ) {
+            //@ts-ignore
+            control.componentControls.forEach((entry) => entry.stop(e, info));
+            console.log(control);
+          }
+          // console.log(e.target);
+          // console.log(control);
+        }}
         onDragEnd={onDragEnd}
         initial="hidden"
         animate={controls}
@@ -90,7 +107,7 @@ export function BottomSheet({
           },
         }}
         dragElastic={0.2}
-        className="absolute w-full rounded-t-lg transition-colors h-screen"
+        className="draggableBottomSheet absolute w-full rounded-t-lg transition-colors h-screen"
       >
         {children}
       </motion.div>

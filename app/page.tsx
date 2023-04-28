@@ -306,8 +306,8 @@ export default function Home() {
                       onSubmit={addReminder}
                     ></NewReminderForm>
                   ) : (
-                    <div className="px-4 ">
-                      <div className="mb-4 flex justify-between">
+                    <>
+                      <div className="mb-4 flex justify-between px-4">
                         <h2
                           className={`text-lg ${"text-skin-inverted"} capitalize`}
                         >
@@ -337,22 +337,23 @@ export default function Home() {
                           </svg>
                         </button>
                       </div>
-
-                      <MedicineList fill={6}>
-                        {false && <p>Loading...</p>}
-                        {dayReminders &&
-                          (dayReminders as ReminderType[]).map((item, i) => (
-                            <div key={i}>
-                              <MedicineListItem
-                                {...item}
-                                shouldTakeAt={item.shouldTakeAt.toDate()}
-                                takenAt={item.takenAt?.toDate()}
-                                onDelete={handleDelete}
-                              ></MedicineListItem>
-                            </div>
-                          ))}
-                      </MedicineList>
-                    </div>
+                      <div className="px-4">
+                        <MedicineList fill={6}>
+                          {false && <p>Loading...</p>}
+                          {dayReminders &&
+                            (dayReminders as ReminderType[]).map((item, i) => (
+                              <div key={i}>
+                                <MedicineListItem
+                                  {...item}
+                                  shouldTakeAt={item.shouldTakeAt.toDate()}
+                                  takenAt={item.takenAt?.toDate()}
+                                  onDelete={handleDelete}
+                                ></MedicineListItem>
+                              </div>
+                            ))}
+                        </MedicineList>
+                      </div>
+                    </>
                   )}
                 </div>
               </div>
