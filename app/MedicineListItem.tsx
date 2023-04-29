@@ -197,16 +197,16 @@ export default function MedicineListItem({
       // Always refetch after error or success:
       onSettled: (newList) => {
         console.log("settled");
-        queryClient.invalidateQueries({
-          queryKey: [
-            "reminders",
-            { userUid },
-            date.toDate().toLocaleDateString("pt-Br", {
-              month: "2-digit",
-              year: "numeric",
-            }),
-          ],
-        });
+        // queryClient.invalidateQueries({
+        //   queryKey: [
+        //     "reminders",
+        //     { userUid },
+        //     date.toDate().toLocaleDateString("pt-Br", {
+        //       month: "2-digit",
+        //       year: "numeric",
+        //     }),
+        //   ],
+        // });
         // setCentered(true);
       },
     }
@@ -242,8 +242,8 @@ export default function MedicineListItem({
 
   return (
     <li className="relative isolate">
-      <div className="absolute flex justify-between w-full h-full -z-10 rounded-lg">
-        <div className="bg-red-400 flex items-center sticky grow text-start rounded-l-lg px-2">
+      <div className="absolute flex justify-between w-full h-full -z-10 md:rounded-lg">
+        <div className="bg-red-400 flex items-center sticky grow text-start md:rounded-l-lg px-2">
           <button
             className="px-4 p-8 hover:bg-[#ffffff20] active:bg-[#ffffff50] rounded-md"
             onClick={handleDeleteClick}
@@ -265,7 +265,7 @@ export default function MedicineListItem({
           </button>
         </div>
 
-        <div className="bg-green-400 flex items-center sticky grow justify-end rounded-r-lg px-2">
+        <div className="bg-green-400 flex items-center sticky grow justify-end md:rounded-r-lg px-2">
           <button
             disabled={checked ? true : false}
             className=" px-4 p-8  hover:bg-[#ffffff20] active:bg-[#ffffff50] rounded-md"
@@ -295,30 +295,34 @@ export default function MedicineListItem({
         drag={"x"}
         transition={transitionOptions}
         animate={controls}
-        className={` bg-white border-neutral-100 rounded-lg hover:bg-slate-50 active:bg-slate-200 cursor-pointer active:cursor-grabbing`}
+        className={` bg-white border-b-[1px] border-gray-200 md:border-neutral-100 md:rounded-lg hover:bg-slate-50 active:bg-slate-200 cursor-pointer active:cursor-grabbing`}
         variants={variants}
         onDragEnd={handleDragEnd}
         onDragStart={handleDragStart}
       >
         <div
           onClick={handleClick}
-          className={`flex gap-4 p-4  ${
+          className={`flex gap-4 px-2 py-4 md:p-4  ${
             dragging ? "pointer-events-none" : "pointer-events-auto"
           }`}
         >
-          <div className={`relative h-20 w-20 rounded-full  p-1 ${color}`}>
-            <Image src={icon} alt={""}></Image>
+          <div
+            className={`relative h-10 w-10 md:h-20 md:w-20 rounded-full  p-1  ${
+              checked ? color : ""
+            }`}
+          >
+            <Image src={icon} alt={""} fill></Image>
           </div>
           <div className="grow">
             <h3
-              className={`text-lg text-sky-500 font-sans font-medium capitalize`}
+              className={`text-md md:text-lg text-sky-500 font-sans md:font-medium capitalize`}
             >
               {title}
             </h3>
-            <p className="text-md text-neutral-600 font-light">{`${amount}, ${frequency}`}</p>
+            <p className="text-sm md:text-md text-neutral-600 font-light">{`${amount}, ${frequency}`}</p>
             <div className="flex justify-between">
               <div className="flex gap-1 py-1 items-center">
-                <p className="text-md text-neutral-600 font-light">
+                <p className="text-sm md:text-md text-neutral-600 font-light">
                   {checked && takenAt
                     ? new Date(takenAt).toLocaleString("pt-Br", {
                         hour: "2-digit",

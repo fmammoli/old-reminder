@@ -8,7 +8,7 @@ export default function medicineList({
   children: ReactNode;
 }) {
   return (
-    <ul className="flex flex-col gap-2 max-h-[calc(60svh)]  md:max-h-[80svh] overflow-y-auto overflow-x-hidden">
+    <ul className="flex flex-col md:gap-2 max-h-[calc(60svh)]  md:max-h-[80svh] overflow-y-auto overflow-x-hidden">
       {children}
 
       <li className="h-[400px]"></li>

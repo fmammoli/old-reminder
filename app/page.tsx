@@ -1,5 +1,6 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import { Inter } from "next/font/google";
 import icon from "/public/images/capsule.png";
 import PillIcon from "/public/images/icons8-pill-100.png";
@@ -18,14 +19,16 @@ import { BottomSheet } from "./BottomSheet";
 
 import MedicineListItem from "./MedicineListItem";
 import MedicineList from "./MedicineList";
-import NewReminderForm from "./NewReminderForm";
+
+const NewReminderForm = dynamic(() => import("./NewReminderForm"), {
+  loading: () => <p>Loading...</p>,
+});
 import { OnArgs } from "react-calendar/dist/cjs/shared/types";
 import { auth, db } from "../firebase/clientApp";
 import { GoogleAuthProvider, User } from "firebase/auth";
 
 import {
   CollectionReference,
-  FirestoreError,
   collection,
   doc,
   query,
@@ -103,25 +106,12 @@ export default function Home() {
     { enabled: user.data ? true : false }
   );
 
-  // const [monthQuery, setMonthQuery] = useState<UseQueryResult<
-  //   (ReminderType & {
-  //     _id: string;
-  //   })[],
-  //   FirestoreError
-  // > | null>(monthQueryRes);
-
   function handleCalendarDayChange(value: Date | null | (Date | null)[]) {
-    console.log("changed calendar");
     if (value && !Array.isArray(value)) {
       setDate(value);
       setModal(!modal);
     }
   }
-
-  useEffect(() => {
-    console.log(monthQuery);
-  }, [monthQuery]);
-
   function handleCalendarMonthChange({
     action,
     activeStartDate,
@@ -154,7 +144,7 @@ export default function Home() {
     });
 
     return (
-      <div className={`flex justify-center items-center gap-1 pt-3 h-2`}>
+      <div className={`flex justify-center items-center gap-1 pt-1 h-2`}>
         {monthQuery &&
           monthQuery.data &&
           monthQuery.data
@@ -163,7 +153,7 @@ export default function Home() {
             .map((item, i) => (
               <div
                 key={`mini-indicator-${i}`}
-                className={`rounded-full  h-2 w-2  ${
+                className={`rounded-full  h-2 w-2 ${
                   item.checked ? item.color : "bg-neutral-300"
                 }`}
               ></div>
@@ -174,15 +164,12 @@ export default function Home() {
 
   const signInMutation = useAuthSignInWithPopup(auth, {
     onSuccess: async (user) => {
-      console.log("user signed in");
       addUser(user.user);
     },
   });
 
   const signOutMutation = useAuthSignOut(auth, {
-    onSuccess: async (res) => {
-      console.log("User Signed out");
-    },
+    onSuccess: async (res) => {},
   });
 
   async function login() {
@@ -252,6 +239,14 @@ export default function Home() {
 
   function handleUpdate() {}
 
+  function handleModalClose() {
+    setModal(false);
+  }
+
+  function handleModalOpen() {
+    setModal(true);
+  }
+
   return (
     <main
       className={
@@ -287,95 +282,89 @@ export default function Home() {
         </section>
 
         <section className="bg-skin-fill mt-1 oveflow-[initial] ">
-          <div className="">
-            <BottomSheet
-              isOpen={modal}
-              onOpen={() => setModal(true)}
-              onClose={() => {
-                setModal(false);
-                setFormOpen(false);
-              }}
-              popUpDistance={isFormOpen ? "top" : "middle"}
+          <BottomSheet
+            isOpen={modal}
+            onOpen={handleModalOpen}
+            onClose={handleModalClose}
+          >
+            <div
+              className={`${
+                isFormOpen ? "bg-skin-fill" : "bg-skin-accent-fill"
+              } h-full rounded-t-xl max-w-2xl mx-auto border-t-2 md:border-2 border-sky-500`}
             >
               <div
-                className={`${
-                  isFormOpen ? "bg-skin-fill" : "bg-skin-accent-fill"
-                } h-full rounded-t-xl max-w-2xl mx-auto border-2 border-sky-500`}
+                className="cursor-grab active:cursor-grabbing pb-2 md:py-4 "
+                onClick={handleBottomSheetDoubleClick}
               >
-                <div
-                  className="cursor-grab active:cursor-grabbing py-4 "
-                  onClick={handleBottomSheetDoubleClick}
-                >
-                  <div className="draggableBar max-w-md mx-auto w-1/2 h-2 bg-neutral-200 rounded-full mt-4 hover:bg-neutral-300"></div>
-                </div>
-
-                <div className="">
-                  {isFormOpen ? (
-                    <NewReminderForm
-                      iconList={iconList}
-                      colorList={themeList}
-                      date={date}
-                      onClose={() => {
-                        setFormOpen(false);
-                        setModal(false);
-                      }}
-                      onSubmit={addReminder}
-                    ></NewReminderForm>
-                  ) : (
-                    <>
-                      <div className="mb-4 flex justify-between px-4">
-                        <h2
-                          className={`text-lg ${"text-skin-inverted"} capitalize`}
-                        >
-                          {date.toLocaleDateString("pt-Br", {
-                            weekday: "long",
-                            day: "2-digit",
-                            month: "long",
-                          })}
-                        </h2>
-                        <button
-                          onClick={handleOpenForm}
-                          className="rounded-full bg-amber-200 w-8 h-8 flex justify-center items-center active:bg-amber-300 hover:scale-125 transition-transform"
-                        >
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            strokeWidth={1.5}
-                            stroke="currentColor"
-                            className="w-6 h-6 text-skin-accent"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              d="M12 4.5v15m7.5-7.5h-15"
-                            />
-                          </svg>
-                        </button>
-                      </div>
-                      <div className="px-4">
-                        <MedicineList fill={6}>
-                          {false && <p>Loading...</p>}
-                          {dayReminders &&
-                            (dayReminders as ReminderType[]).map((item, i) => (
-                              <div key={i}>
-                                <MedicineListItem
-                                  {...item}
-                                  shouldTakeAt={item.shouldTakeAt.toDate()}
-                                  takenAt={item.takenAt?.toDate()}
-                                  onDelete={handleDelete}
-                                  onUpdate={handleUpdate}
-                                ></MedicineListItem>
-                              </div>
-                            ))}
-                        </MedicineList>
-                      </div>
-                    </>
-                  )}
-                </div>
+                <div className="draggableBar max-w-md mx-auto w-1/2 h-1 md:h-2 bg-neutral-200 rounded-full mt-4 hover:bg-neutral-300"></div>
               </div>
-            </BottomSheet>
-          </div>
+
+              <>
+                {isFormOpen ? (
+                  <NewReminderForm
+                    iconList={iconList}
+                    colorList={themeList}
+                    date={date}
+                    onClose={() => {
+                      setFormOpen(false);
+                      setModal(false);
+                    }}
+                    onSubmit={addReminder}
+                  ></NewReminderForm>
+                ) : (
+                  <>
+                    <div className="mb-4 flex justify-between px-4">
+                      <h2
+                        className={`md:text-lg ${"text-skin-inverted"} capitalize`}
+                      >
+                        {date.toLocaleDateString("pt-Br", {
+                          weekday: "long",
+                          day: "2-digit",
+                          month: "long",
+                        })}
+                      </h2>
+                      <button
+                        onClick={handleOpenForm}
+                        className="rounded-full bg-amber-200 w-8 h-8 flex justify-center items-center active:bg-amber-300 hover:scale-125 transition-transform"
+                      >
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          strokeWidth={1.5}
+                          stroke="currentColor"
+                          className="w-6 h-6 text-skin-accent"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            d="M12 4.5v15m7.5-7.5h-15"
+                          />
+                        </svg>
+                      </button>
+                    </div>
+                    <div className="md:px-4">
+                      <MedicineList fill={6}>
+                        {false && <p>Loading...</p>}
+                        {dayReminders &&
+                          (dayReminders as ReminderType[]).map((item, i) => (
+                            <div key={i}>
+                              <MedicineListItem
+                                {...item}
+                                shouldTakeAt={item.shouldTakeAt.toDate()}
+                                takenAt={item.takenAt?.toDate()}
+                                onDelete={handleDelete}
+                                onUpdate={handleUpdate}
+                              ></MedicineListItem>
+                            </div>
+                          ))}
+                      </MedicineList>
+                    </div>
+                  </>
+                )}
+              </>
+            </div>
+          </BottomSheet>
         </section>
       </div>
     </main>

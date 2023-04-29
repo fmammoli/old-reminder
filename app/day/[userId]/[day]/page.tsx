@@ -153,9 +153,9 @@ export default function Page({
       },
       // Always refetch after error or success:
       onSettled: (newTodo) => {
-        queryClient.invalidateQueries({
-          queryKey: ["reminders", { userUid }, { day }],
-        });
+        // queryClient.invalidateQueries({
+        //   queryKey: ["reminders", { userUid }, { day }],
+        // });
         // queryClient.invalidateQueries({
         //   queryKey: ["reminders", { userUid }],
         // });

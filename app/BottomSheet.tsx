@@ -1,4 +1,4 @@
-import { useEffect, useRef, ReactNode, useState } from "react";
+import { useEffect, useRef, ReactNode, useState, useMemo } from "react";
 import { PanInfo, motion, useAnimation, useDragControls } from "framer-motion";
 
 /**
@@ -10,6 +10,17 @@ import { PanInfo, motion, useAnimation, useDragControls } from "framer-motion";
 const swipeConfidenceThreshold = 1000;
 const swipePower = (offset: number, velocity: number) => {
   return Math.abs(offset) * velocity;
+};
+
+const variants = {
+  visible: (constrains: [number, number]) => {
+    return {
+      y: -constrains[0],
+    };
+  },
+  hidden: () => {
+    return { y: 0 };
+  },
 };
 
 export function BottomSheet({
@@ -34,6 +45,7 @@ export function BottomSheet({
       controls.start("visible");
     } else if (swipe > swipeConfidenceThreshold) {
       controls.start("hidden");
+      onClose();
     }
 
     // if (swipe !== 0) {
@@ -67,51 +79,58 @@ export function BottomSheet({
   }, [isOpen, containerRef]);
 
   const control = useDragControls();
+
+  function handleDragStart(
+    e: MouseEvent | TouchEvent | PointerEvent,
+    info: PanInfo
+  ) {
+    if (
+      //@ts-ignore
+      !e.target?.parentElement?.parentElement.classList.contains(
+        "draggableBottomSheet"
+      )
+    ) {
+      if (
+        //@ts-ignore
+        !e.target?.classList.contains("draggableBar")
+      ) {
+        //@ts-ignore
+        control.componentControls.forEach((entry) => entry.stop(e, info));
+        console.log(control);
+      }
+    }
+    // console.log(e.target);
+    // console.log(control);
+  }
+
+  const transition = useMemo(() => {
+    return {
+      type: "spring",
+      damping: 30,
+      stiffness: 600,
+    };
+  }, []);
+
+  const dragConstraints = {
+    top: -constrains[0],
+    bottom: 0,
+  };
+
   return (
     <div className="w-full" ref={containerRef}>
       <motion.div
         id="draggableBottomSheet"
         drag="y"
         dragControls={control}
-        dragConstraints={{ top: -constrains[0], bottom: 0 }}
-        onDragStart={(e, info) => {
-          if (
-            //@ts-ignore
-            !e.target?.parentElement?.parentElement.classList.contains(
-              "draggableBottomSheet"
-            )
-          ) {
-            if (
-              //@ts-ignore
-              !e.target?.classList.contains("draggableBar")
-            ) {
-              //@ts-ignore
-              control.componentControls.forEach((entry) => entry.stop(e, info));
-              console.log(control);
-            }
-          }
-          // console.log(e.target);
-          // console.log(control);
-        }}
+        dragConstraints={dragConstraints}
+        onDragStart={handleDragStart}
         onDragEnd={onDragEnd}
-        initial="hidden"
+        initial={isOpen ? "visible" : "hidden"}
         animate={controls}
-        transition={{
-          type: "spring",
-          damping: 30,
-          stiffness: 600,
-        }}
-        variants={{
-          visible: () => {
-            return {
-              y: -constrains[0],
-            };
-          },
-          hidden: () => {
-            return { y: 0 };
-          },
-        }}
+        transition={transition}
+        variants={variants}
         dragElastic={0.2}
+        custom={constrains}
         className="draggableBottomSheet absolute w-full rounded-t-lg transition-colors h-screen"
       >
         {children}

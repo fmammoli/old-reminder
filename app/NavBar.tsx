@@ -11,7 +11,7 @@ export default function NavBar({
   onLogout: () => void;
 }) {
   return (
-    <nav className="flex justify-between items-center max-w-2xl mx-auto pt-2 isolate">
+    <nav className="flex justify-between items-center max-w-2xl mx-auto pt-2  isolate px-2">
       <label htmlFor="dropdownMenu" className="relative">
         <input id={"dropdownMenu"} type="checkbox" className="hidden peer" />
         <div
